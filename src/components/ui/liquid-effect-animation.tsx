@@ -24,8 +24,8 @@ export function LiquidEffectAnimation() {
       const canvas = document.getElementById('liquid-canvas');
       if (canvas) {
         const app = LiquidBackground(canvas);
-        // Arashiyama Bamboo Grove Image
-        app.loadImage('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=2992&auto=format&fit=crop');
+        // Mount Fuji Image
+        app.loadImage('https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?q=80&w=2000&auto=format&fit=crop');
         app.liquidPlane.material.metalness = 0.1; // Low shine for natural look
         app.liquidPlane.material.roughness = 0.9; // Matte texture
         app.liquidPlane.uniforms.displacementScale.value = 2; // Gentle ripples
