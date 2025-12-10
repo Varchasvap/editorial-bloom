@@ -5,14 +5,14 @@ interface NavigationCardProps {
   title: string;
   description: string;
   icon: LucideIcon;
-  iconColor: "blue" | "rose" | "purple";
+  iconColor: "teal" | "rose" | "indigo";
   className?: string;
 }
 
 const iconColorClasses = {
-  blue: "text-blue-600",
-  rose: "text-rose-500",
-  purple: "text-purple-600",
+  teal: "text-teal-700",
+  rose: "text-rose-600",
+  indigo: "text-indigo-600",
 };
 
 export function NavigationCard({
@@ -25,10 +25,10 @@ export function NavigationCard({
   return (
     <div
       className={cn(
-        "group relative bg-white/60 backdrop-blur-sm rounded-2xl p-8",
-        "border border-white/80",
-        "shadow-lg hover:shadow-2xl hover:shadow-purple-200/50 transition-all duration-300",
-        "cursor-pointer hover:-translate-y-2",
+        "group relative bg-white/50 backdrop-blur-md rounded-2xl p-8",
+        "border border-white/60",
+        "shadow-xl shadow-green-900/10 hover:shadow-2xl hover:shadow-green-900/20 transition-all duration-300",
+        "cursor-pointer hover:-translate-y-1",
         className
       )}
     >

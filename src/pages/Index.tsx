@@ -25,7 +25,7 @@ const Index = () => {
               title="Learn Subjects in English"
               description="Book online lessons to study your school subjects using English."
               icon={BookOpen}
-              iconColor="blue"
+              iconColor="teal"
             />
             <NavigationCard
               title="Fund Girl's Education"
@@ -35,9 +35,9 @@ const Index = () => {
             />
             <NavigationCard
               title="Learn About Japan"
-              description="Explore travel insights, cultural wisdom, and the beauty of the Rising Sun."
+              description="Explore travel insights, cultural wisdom, and the beauty of the Land of the Rising Sun."
               icon={Flower2}
-              iconColor="purple"
+              iconColor="indigo"
             />
           </div>
         </section>
