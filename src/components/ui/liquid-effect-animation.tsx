@@ -24,10 +24,11 @@ export function LiquidEffectAnimation() {
       const canvas = document.getElementById('liquid-canvas');
       if (canvas) {
         const app = LiquidBackground(canvas);
-        app.loadImage('https://i.pinimg.com/1200x/38/71/c9/3871c9c7a6066df6763c97dc3285c907.jpg');
-        app.liquidPlane.material.metalness = 0.6;
-        app.liquidPlane.material.roughness = 0.1;
-        app.liquidPlane.uniforms.displacementScale.value = 4;
+        // Arashiyama Bamboo Grove Image
+        app.loadImage('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=2992&auto=format&fit=crop');
+        app.liquidPlane.material.metalness = 0.1; // Low shine for natural look
+        app.liquidPlane.material.roughness = 0.9; // Matte texture
+        app.liquidPlane.uniforms.displacementScale.value = 2; // Gentle ripples
         app.setRain(false);
         window.__liquidApp = app;
       }
@@ -42,8 +43,8 @@ export function LiquidEffectAnimation() {
   return (
     <div className="fixed inset-0 m-0 w-full h-full touch-none overflow-hidden -z-10">
       <canvas ref={canvasRef} id="liquid-canvas" className="fixed inset-0 w-full h-full" />
-      {/* THE SUNRISE OVERLAY - Vibrant & Fresh */}
-      <div className="absolute inset-0 bg-gradient-to-br from-sky-100/80 via-purple-50/80 to-rose-100/80 backdrop-blur-[1px]" />
+      {/* Light Overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-white/20" />
     </div>
   )
 }
