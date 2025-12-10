@@ -25,9 +25,9 @@ export function LiquidEffectAnimation() {
       if (canvas) {
         const app = LiquidBackground(canvas);
         app.loadImage('https://i.pinimg.com/1200x/38/71/c9/3871c9c7a6066df6763c97dc3285c907.jpg');
-        app.liquidPlane.material.metalness = 0.75;
-        app.liquidPlane.material.roughness = 0.25;
-        app.liquidPlane.uniforms.displacementScale.value = 5;
+        app.liquidPlane.material.metalness = 0.6;
+        app.liquidPlane.material.roughness = 0.1;
+        app.liquidPlane.uniforms.displacementScale.value = 4;
         app.setRain(false);
         window.__liquidApp = app;
       }
@@ -42,9 +42,8 @@ export function LiquidEffectAnimation() {
   return (
     <div className="fixed inset-0 m-0 w-full h-full touch-none overflow-hidden -z-10">
       <canvas ref={canvasRef} id="liquid-canvas" className="fixed inset-0 w-full h-full" />
-      {/* THE WARM PAPER OVERLAY - Critical for the vibe */}
-      <div className="absolute inset-0 bg-paper/90 mix-blend-overlay opacity-90" />
-      <div className="absolute inset-0 bg-paper/80" />
+      {/* THE SUNRISE OVERLAY - Vibrant & Fresh */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-100/80 via-purple-50/80 to-rose-100/80 backdrop-blur-[1px]" />
     </div>
   )
 }
