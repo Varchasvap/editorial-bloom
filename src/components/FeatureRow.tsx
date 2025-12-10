@@ -13,7 +13,7 @@ interface FeatureRowProps {
 }
 
 const buttonColorClasses = {
-  slate: "text-slate-700 hover:text-slate-900 hover:bg-slate-100",
+  slate: "text-blue-600 hover:text-blue-700 hover:bg-blue-50",
   rose: "text-rose-600 hover:text-rose-700 hover:bg-rose-50",
   indigo: "text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50",
 };
