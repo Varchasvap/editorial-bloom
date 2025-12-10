@@ -2,95 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* 
+ * Learning University - "Warm Paper & Ink" Editorial Design System
+ * Inspired by premium educational journals and vintage academic publications
+ */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Paper & Surface Colors */
+    --background: 45 33% 97%; /* Warm cream paper #FDFBF7 */
+    --foreground: 243 37% 20%; /* Deep indigo ink #1e1b4b */
+    --paper: 45 33% 97%;
 
+    /* Card surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 243 37% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 243 37% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand Colors - Deep Indigo Ink */
+    --primary: 243 37% 20%;
+    --primary-foreground: 45 33% 97%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm neutrals */
+    --secondary: 45 20% 92%;
+    --secondary-foreground: 243 37% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Soft paper tones */
+    --muted: 45 15% 93%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Vermilion highlight */
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Ink color for text */
+    --ink: 243 37% 20%;
+    
+    /* Charcoal for secondary text */
+    --charcoal: 215 16% 47%;
+    
+    /* Vermilion accent */
+    --vermilion: 24 95% 53%;
+    
+    /* Sakura pink */
+    --sakura: 330 70% 65%;
+
+    /* Borders & Inputs */
+    --border: 45 20% 88%;
+    --input: 45 20% 88%;
+    --ring: 243 37% 20%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Editorial Shadow */
+    --shadow-editorial: 0 10px 40px -10px hsl(243 37% 20% / 0.15);
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar - keeping for compatibility */
+    --sidebar-background: 45 33% 97%;
+    --sidebar-foreground: 243 37% 20%;
+    --sidebar-primary: 243 37% 20%;
+    --sidebar-primary-foreground: 45 33% 97%;
+    --sidebar-accent: 45 20% 92%;
+    --sidebar-accent-foreground: 243 37% 20%;
+    --sidebar-border: 45 20% 88%;
+    --sidebar-ring: 243 37% 20%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode - Invert to a rich, dark paper look */
+    --background: 243 37% 12%;
+    --foreground: 45 33% 95%;
+    --paper: 243 37% 8%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 243 30% 16%;
+    --card-foreground: 45 33% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 243 30% 16%;
+    --popover-foreground: 45 33% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 45 33% 95%;
+    --primary-foreground: 243 37% 12%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 243 25% 22%;
+    --secondary-foreground: 45 33% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 243 25% 20%;
+    --muted-foreground: 45 20% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 24 95% 58%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 45 33% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --ink: 45 33% 95%;
+    --charcoal: 45 20% 70%;
+    --vermilion: 24 95% 58%;
+    --sakura: 330 70% 70%;
+
+    --border: 243 25% 25%;
+    --input: 243 25% 25%;
+    --ring: 45 33% 95%;
+
+    --sidebar-background: 243 37% 12%;
+    --sidebar-foreground: 45 33% 95%;
+    --sidebar-primary: 24 95% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 243 25% 22%;
+    --sidebar-accent-foreground: 45 33% 95%;
+    --sidebar-border: 243 25% 25%;
+    --sidebar-ring: 24 95% 58%;
   }
 }
 
@@ -99,7 +125,28 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+}
+
+@layer utilities {
+  /* Typography utilities */
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .font-body {
+    font-family: 'Merriweather', Georgia, serif;
+  }
+
+  /* Editorial text shadow for depth */
+  .text-shadow-editorial {
+    text-shadow: 0 2px 4px hsl(var(--ink) / 0.1);
   }
 }
