@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface TimeDrumPickerProps {
@@ -19,6 +19,8 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
   const [selectedMinute, setSelectedMinute] = useState("00");
   const hourRef = useRef<HTMLDivElement>(null);
   const minuteRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutHour = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutMinute = useRef<NodeJS.Timeout | null>(null);
 
   // Parse initial value
   useEffect(() => {
@@ -34,36 +36,97 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
     onChange(`${selectedHour}:${selectedMinute} JST`);
   }, [selectedHour, selectedMinute, onChange]);
 
-  const scrollToItem = (ref: React.RefObject<HTMLDivElement>, index: number) => {
-    if (ref.current) {
-      ref.current.scrollTo({
-        top: index * ITEM_HEIGHT,
-        behavior: "smooth",
-      });
-    }
-  };
+  // Smooth snap animation using easing
+  const smoothScrollTo = useCallback((ref: React.RefObject<HTMLDivElement>, targetTop: number) => {
+    if (!ref.current) return;
+    
+    const element = ref.current;
+    const startTop = element.scrollTop;
+    const distance = targetTop - startTop;
+    const duration = 300;
+    let startTime: number | null = null;
 
-  const handleScroll = (
+    // Ease out cubic for smooth deceleration
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const animateScroll = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      
+      element.scrollTop = startTop + (distance * easedProgress);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
+  }, []);
+
+  // Snap to nearest item after scroll ends
+  const snapToNearest = useCallback((
     ref: React.RefObject<HTMLDivElement>,
     items: string[],
     setter: (val: string) => void
   ) => {
-    if (ref.current) {
-      const scrollTop = ref.current.scrollTop;
-      const index = Math.round(scrollTop / ITEM_HEIGHT);
-      const clampedIndex = Math.max(0, Math.min(index, items.length - 1));
-      setter(items[clampedIndex]);
+    if (!ref.current) return;
+    
+    const scrollTop = ref.current.scrollTop;
+    const index = Math.round(scrollTop / ITEM_HEIGHT);
+    const clampedIndex = Math.max(0, Math.min(index, items.length - 1));
+    const targetTop = clampedIndex * ITEM_HEIGHT;
+    
+    setter(items[clampedIndex]);
+    smoothScrollTo(ref, targetTop);
+  }, [smoothScrollTo]);
+
+  // Handle scroll with debounce for snap
+  const handleHourScroll = useCallback(() => {
+    if (scrollTimeoutHour.current) {
+      clearTimeout(scrollTimeoutHour.current);
     }
-  };
+    
+    // Update selection immediately for visual feedback
+    if (hourRef.current) {
+      const scrollTop = hourRef.current.scrollTop;
+      const index = Math.round(scrollTop / ITEM_HEIGHT);
+      const clampedIndex = Math.max(0, Math.min(index, hours.length - 1));
+      setSelectedHour(hours[clampedIndex]);
+    }
+
+    // Snap after scroll momentum settles
+    scrollTimeoutHour.current = setTimeout(() => {
+      snapToNearest(hourRef, hours, setSelectedHour);
+    }, 100);
+  }, [snapToNearest]);
+
+  const handleMinuteScroll = useCallback(() => {
+    if (scrollTimeoutMinute.current) {
+      clearTimeout(scrollTimeoutMinute.current);
+    }
+    
+    if (minuteRef.current) {
+      const scrollTop = minuteRef.current.scrollTop;
+      const index = Math.round(scrollTop / ITEM_HEIGHT);
+      const clampedIndex = Math.max(0, Math.min(index, minutes.length - 1));
+      setSelectedMinute(minutes[clampedIndex]);
+    }
+
+    scrollTimeoutMinute.current = setTimeout(() => {
+      snapToNearest(minuteRef, minutes, setSelectedMinute);
+    }, 100);
+  }, [snapToNearest]);
 
   const handleHourClick = (hour: string, index: number) => {
     setSelectedHour(hour);
-    scrollToItem(hourRef, index);
+    smoothScrollTo(hourRef, index * ITEM_HEIGHT);
   };
 
   const handleMinuteClick = (minute: string, index: number) => {
     setSelectedMinute(minute);
-    scrollToItem(minuteRef, index);
+    smoothScrollTo(minuteRef, index * ITEM_HEIGHT);
   };
 
   // Scroll to initial position on mount
@@ -71,12 +134,20 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
     const hourIndex = hours.indexOf(selectedHour);
     const minuteIndex = minutes.indexOf(selectedMinute);
     
-    if (hourRef.current && hourIndex >= 0) {
-      hourRef.current.scrollTop = hourIndex * ITEM_HEIGHT;
-    }
-    if (minuteRef.current && minuteIndex >= 0) {
-      minuteRef.current.scrollTop = minuteIndex * ITEM_HEIGHT;
-    }
+    // Use timeout to ensure DOM is ready
+    setTimeout(() => {
+      if (hourRef.current && hourIndex >= 0) {
+        hourRef.current.scrollTop = hourIndex * ITEM_HEIGHT;
+      }
+      if (minuteRef.current && minuteIndex >= 0) {
+        minuteRef.current.scrollTop = minuteIndex * ITEM_HEIGHT;
+      }
+    }, 50);
+
+    return () => {
+      if (scrollTimeoutHour.current) clearTimeout(scrollTimeoutHour.current);
+      if (scrollTimeoutMinute.current) clearTimeout(scrollTimeoutMinute.current);
+    };
   }, []);
 
   return (
@@ -94,9 +165,10 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
           className="overflow-y-auto scrollbar-hide relative z-20"
           style={{ 
             height: CONTAINER_HEIGHT,
-            scrollSnapType: "y mandatory",
+            scrollBehavior: "auto",
+            WebkitOverflowScrolling: "touch",
           }}
-          onScroll={() => handleScroll(hourRef, hours, setSelectedHour)}
+          onScroll={handleHourScroll}
         >
           {/* Top Padding */}
           <div style={{ height: ITEM_HEIGHT * PADDING_ITEMS }} />
@@ -105,16 +177,14 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
             <div
               key={hour}
               className={cn(
-                "flex items-center justify-center cursor-pointer transition-all duration-150",
-                "text-2xl font-bold font-body select-none",
+                "flex items-center justify-center cursor-pointer select-none",
+                "text-2xl font-bold font-body",
+                "transition-all duration-200 ease-out",
                 selectedHour === hour 
-                  ? "text-slate-900 scale-110" 
-                  : "text-slate-400"
+                  ? "text-slate-900 scale-110 opacity-100" 
+                  : "text-slate-400 scale-100 opacity-60"
               )}
-              style={{ 
-                height: ITEM_HEIGHT,
-                scrollSnapAlign: "center",
-              }}
+              style={{ height: ITEM_HEIGHT }}
               onClick={() => handleHourClick(hour, index)}
             >
               {hour}
@@ -127,7 +197,7 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
       </div>
 
       {/* Colon Separator */}
-      <span className="text-2xl font-bold text-slate-900 z-20 select-none">:</span>
+      <span className="text-2xl font-bold text-slate-900 z-20 select-none animate-pulse">:</span>
 
       {/* Minutes Column */}
       <div className="relative">
@@ -136,9 +206,10 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
           className="overflow-y-auto scrollbar-hide relative z-20"
           style={{ 
             height: CONTAINER_HEIGHT,
-            scrollSnapType: "y mandatory",
+            scrollBehavior: "auto",
+            WebkitOverflowScrolling: "touch",
           }}
-          onScroll={() => handleScroll(minuteRef, minutes, setSelectedMinute)}
+          onScroll={handleMinuteScroll}
         >
           {/* Top Padding */}
           <div style={{ height: ITEM_HEIGHT * PADDING_ITEMS }} />
@@ -147,16 +218,14 @@ export const TimeDrumPicker = ({ value, onChange }: TimeDrumPickerProps) => {
             <div
               key={minute}
               className={cn(
-                "flex items-center justify-center cursor-pointer transition-all duration-150",
-                "text-2xl font-bold font-body select-none",
+                "flex items-center justify-center cursor-pointer select-none",
+                "text-2xl font-bold font-body",
+                "transition-all duration-200 ease-out",
                 selectedMinute === minute 
-                  ? "text-slate-900 scale-110" 
-                  : "text-slate-400"
+                  ? "text-slate-900 scale-110 opacity-100" 
+                  : "text-slate-400 scale-100 opacity-60"
               )}
-              style={{ 
-                height: ITEM_HEIGHT,
-                scrollSnapAlign: "center",
-              }}
+              style={{ height: ITEM_HEIGHT }}
               onClick={() => handleMinuteClick(minute, index)}
             >
               {minute}
