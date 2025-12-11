@@ -86,6 +86,7 @@ const LearnSubjects = () => {
     setIsSubmitting(true);
     
     const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
+    const flexibilityStatus = flexibleTime ? "Yes (Flexible)" : "No (Fixed Time)";
     
     const templateParams = {
       from_name: data.studentName || "Unknown Name",
@@ -94,7 +95,8 @@ const LearnSubjects = () => {
       topic: data.topic || "No topic",
       time_slot: flexibleTime ? "Flexible" : (selectedTime || "No time selected"),
       days: selectedDays.length > 0 ? selectedDays.join(", ") : "No days selected",
-      contact_email: data.email || "no-email@test.com"
+      contact_email: data.email || "no-email@test.com",
+      is_flexible: flexibilityStatus
     };
     
     console.log("Attempting to send booking data:", templateParams);
@@ -107,7 +109,7 @@ const LearnSubjects = () => {
       );
 
       console.log("EmailJS Success:", result.text);
-      toast.success("Success! Request sent to Owner.");
+      toast.success("Request Sent! We will email you shortly.");
       reset();
       setSelectedSubject("");
       setSelectedDays([]);
