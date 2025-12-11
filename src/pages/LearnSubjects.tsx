@@ -71,7 +71,7 @@ const LearnSubjects = () => {
     if (!data.studentName?.trim()) newErrors.studentName = true;
     if (!data.email?.trim()) newErrors.email = true;
     if (!selectedSubject) newErrors.subject = true;
-    if (!flexibleTime && !selectedTime) newErrors.time = true;
+    if (!selectedTime) newErrors.time = true;
     
     setValidationErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -86,17 +86,17 @@ const LearnSubjects = () => {
     setIsSubmitting(true);
     
     const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
-    const flexibilityStatus = flexibleTime ? "Yes (Flexible)" : "No (Fixed Time)";
+    const flexibilityNote = flexibleTime ? "Yes - Open to rescheduling" : "No - Fixed time only";
     
     const templateParams = {
       from_name: data.studentName || "Unknown Name",
       age: data.age || "Not specified",
       subject: subjectLabel || "General",
       topic: data.topic || "No topic",
-      time_slot: flexibleTime ? "Flexible" : (selectedTime || "No time selected"),
+      time_slot: selectedTime || "No specific time picked",
       days: selectedDays.length > 0 ? selectedDays.join(", ") : "No days selected",
       contact_email: data.email || "no-email@test.com",
-      is_flexible: flexibilityStatus
+      is_flexible: flexibilityNote
     };
     
     console.log("Attempting to send booking data:", templateParams);
@@ -297,9 +297,9 @@ const LearnSubjects = () => {
                 <div>
                   <Label className={cn(
                     "font-body text-slate-700 mb-3 block",
-                    validationErrors.time && !flexibleTime && "text-rose-600"
+                    validationErrors.time && "text-rose-600"
                   )}>
-                    Preferred Start Time {!flexibleTime && <span className="text-rose-500">*</span>}
+                    Preferred Start Time <span className="text-rose-500">*</span>
                   </Label>
                   <CompactTimeSelector
                     value={selectedTime}
@@ -307,7 +307,6 @@ const LearnSubjects = () => {
                       setSelectedTime(time);
                       setValidationErrors(prev => ({ ...prev, time: false }));
                     }, [])}
-                    disabled={flexibleTime}
                   />
                 </div>
 
@@ -317,14 +316,11 @@ const LearnSubjects = () => {
                     checked={flexibleTime}
                     onCheckedChange={(checked) => {
                       setFlexibleTime(checked as boolean);
-                      if (checked) {
-                        setValidationErrors(prev => ({ ...prev, time: false }));
-                      }
                     }}
                     className="border-slate-400 data-[state=checked]:bg-blue-600"
                   />
                   <Label htmlFor="flexibleTime" className="font-body text-slate-700 cursor-pointer">
-                    I am flexible with time
+                    I am flexible (Open to rescheduling)
                   </Label>
                 </div>
               </div>
