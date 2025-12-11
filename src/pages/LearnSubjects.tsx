@@ -38,7 +38,7 @@ const subjects = [
   { id: "other", label: "Other", icon: MoreHorizontal },
 ];
 
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 
 const ages = [...Array.from({ length: 13 }, (_, i) => (i + 6).toString()), "Adult"];
 
@@ -47,7 +47,7 @@ interface FormData {
   studentName: string;
   age: string;
   topic: string;
-  preferredDays: string[];
+  preferredDate: string;
   preferredTime: string;
   flexibleTime: boolean;
   email: string;
@@ -56,7 +56,7 @@ interface FormData {
 
 const LearnSubjects = () => {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("17:00 JST");
   const [flexibleTime, setFlexibleTime] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -71,6 +71,7 @@ const LearnSubjects = () => {
     if (!data.studentName?.trim()) newErrors.studentName = true;
     if (!data.email?.trim()) newErrors.email = true;
     if (!selectedSubject) newErrors.subject = true;
+    if (!selectedDate) newErrors.date = true;
     if (!selectedTime) newErrors.time = true;
     
     setValidationErrors(newErrors);
@@ -86,6 +87,7 @@ const LearnSubjects = () => {
     setIsSubmitting(true);
     
     const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
+    const dateString = selectedDate ? new Date(selectedDate).toLocaleDateString() : "No Date Selected";
     const flexibilityNote = flexibleTime ? "Yes - Open to rescheduling" : "No - Fixed time only";
     
     const templateParams = {
@@ -94,7 +96,7 @@ const LearnSubjects = () => {
       subject: subjectLabel || "General",
       topic: data.topic || "No topic",
       time_slot: selectedTime || "No specific time picked",
-      days: selectedDays.length > 0 ? selectedDays.join(", ") : "No days selected",
+      date: dateString,
       contact_email: data.email || "no-email@test.com",
       is_flexible: flexibilityNote
     };
@@ -112,7 +114,7 @@ const LearnSubjects = () => {
       toast.success("Request Sent! We will email you shortly.");
       reset();
       setSelectedSubject("");
-      setSelectedDays([]);
+      setSelectedDate("");
       setSelectedTime("17:00 JST");
       setFlexibleTime(false);
       setValidationErrors({});
@@ -125,11 +127,6 @@ const LearnSubjects = () => {
     }
   };
 
-  const toggleDay = (day: string) => {
-    setSelectedDays(prev =>
-      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
-    );
-  };
 
   return (
     <div className="relative min-h-screen">
@@ -272,26 +269,25 @@ const LearnSubjects = () => {
 
               <div className="space-y-4">
                 <div>
-                  <Label className="font-body text-slate-700 mb-3 block">
-                    Preferred Days
+                  <Label className={cn(
+                    "font-body text-slate-700 mb-3 block",
+                    validationErrors.date && "text-rose-600"
+                  )}>
+                    Preferred Date <span className="text-rose-500">*</span>
                   </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {days.map((day) => (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => toggleDay(day)}
-                        className={cn(
-                          "px-4 py-2 rounded-lg border text-sm font-body transition-all",
-                          selectedDays.includes(day)
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white text-slate-600 border-slate-300 hover:border-blue-300"
-                        )}
-                      >
-                        {day}
-                      </button>
-                    ))}
-                  </div>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => {
+                      setSelectedDate(e.target.value);
+                      setValidationErrors(prev => ({ ...prev, date: false }));
+                    }}
+                    min={new Date().toISOString().split('T')[0]}
+                    className={cn(
+                      "w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-700 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:outline-none",
+                      validationErrors.date && "border-rose-500 ring-1 ring-rose-500"
+                    )}
+                  />
                 </div>
 
                 <div>
