@@ -66,33 +66,39 @@ const LearnSubjects = () => {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
+    
+    const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
+    
+    const templateParams = {
+      from_name: data.studentName || "Unknown Name",
+      age: data.age || "Not specified",
+      subject: subjectLabel || "General",
+      topic: data.topic || "No topic",
+      time_slot: selectedTime || "No time selected",
+      days: selectedDays.length > 0 ? selectedDays.join(", ") : "No days selected",
+      contact_email: data.email || "no-email@test.com"
+    };
+    
+    console.log("Attempting to send booking data:", templateParams);
+
     try {
-      const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
-      
-      await emailjs.send(
+      const result = await emailjs.send(
         "service_fu37bdk",
         "template_vc0nkdh",
-        {
-          from_name: data.studentName,
-          age: data.age,
-          subject: subjectLabel,
-          topic: data.topic,
-          time_slot: selectedTime,
-          days: selectedDays.join(", "),
-          contact_email: data.email
-        }
+        templateParams
       );
 
-      toast.success("Request Sent! We will email you shortly to confirm.");
+      console.log("EmailJS Success:", result.text);
+      toast.success("Success! Request sent to Owner.");
       reset();
       setSelectedSubject("");
       setSelectedDays([]);
       setSelectedTime("17:00 JST");
       setFlexibleTime(false);
       setShowSuccess(true);
-    } catch (error) {
-      console.error("Email Error:", error);
-      toast.error("Something went wrong. Please try again.");
+    } catch (error: any) {
+      console.error("EmailJS Failed:", error);
+      toast.error(`Error: ${error.text || error.message || "Connection failed"}`);
     } finally {
       setIsSubmitting(false);
     }
