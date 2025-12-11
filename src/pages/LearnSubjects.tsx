@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -35,21 +34,15 @@ const subjects = [
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const grades = [
-  "Junior High 1",
-  "Junior High 2",
-  "Junior High 3",
-  "High School 1",
-  "High School 2",
-  "High School 3",
-];
+const timeSlots = ["15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"];
+
+const ages = [...Array.from({ length: 13 }, (_, i) => (i + 6).toString()), "Adult"];
 
 interface FormData {
   subject: string;
   studentName: string;
-  grade: string;
+  age: string;
   topic: string;
-  languageBalance: string;
   preferredDays: string[];
   preferredTime: string;
   flexibleTime: boolean;
@@ -60,13 +53,14 @@ interface FormData {
 const LearnSubjects = () => {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedTime, setSelectedTime] = useState<string>("");
   const [flexibleTime, setFlexibleTime] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
 
   const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", { ...data, subject: selectedSubject, preferredDays: selectedDays, flexibleTime });
+    console.log("Form submitted:", { ...data, subject: selectedSubject, preferredDays: selectedDays, preferredTime: selectedTime, flexibleTime });
     setShowSuccess(true);
   };
 
@@ -97,7 +91,7 @@ const LearnSubjects = () => {
           {/* Header */}
           <header className="text-center mb-10">
             <h1 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-              Book Your English Lesson
+              Lesson Reservation
             </h1>
             <p className="font-body text-slate-600">
               Select your subject and preferred time. We will confirm your slot via email.
@@ -159,17 +153,17 @@ const LearnSubjects = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="grade" className="font-body text-slate-700">
-                    School Grade
+                  <Label htmlFor="age" className="font-body text-slate-700">
+                    Age
                   </Label>
-                  <Select onValueChange={(val) => setValue("grade", val)}>
+                  <Select onValueChange={(val) => setValue("age", val)}>
                     <SelectTrigger className="mt-1.5 bg-white border-slate-300 text-slate-900">
-                      <SelectValue placeholder="Select grade" />
+                      <SelectValue placeholder="Select age" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-slate-200">
-                      {grades.map((grade) => (
-                        <SelectItem key={grade} value={grade} className="text-slate-900">
-                          {grade}
+                      {ages.map((age) => (
+                        <SelectItem key={age} value={age} className="text-slate-900">
+                          {age}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -178,38 +172,14 @@ const LearnSubjects = () => {
 
                 <div>
                   <Label htmlFor="topic" className="font-body text-slate-700">
-                    Topic or Textbook Unit
+                    Topic
                   </Label>
                   <Textarea
                     id="topic"
                     {...register("topic")}
-                    placeholder="e.g., 'Page 45, Quadratic Equations'"
+                    placeholder="What do you want to learn today?"
                     className="mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 min-h-[80px]"
                   />
-                </div>
-
-                <div>
-                  <Label className="font-body text-slate-700 mb-3 block">
-                    Language Balance
-                  </Label>
-                  <RadioGroup
-                    defaultValue="mostly-english"
-                    onValueChange={(val) => setValue("languageBalance", val)}
-                    className="flex flex-col gap-3"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="mostly-english" id="mostly-english" className="border-slate-400 text-blue-600" />
-                      <Label htmlFor="mostly-english" className="font-body text-slate-700 cursor-pointer">
-                        Mostly English
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="english-japanese" id="english-japanese" className="border-slate-400 text-blue-600" />
-                      <Label htmlFor="english-japanese" className="font-body text-slate-700 cursor-pointer">
-                        English + Japanese Support
-                      </Label>
-                    </div>
-                  </RadioGroup>
                 </div>
               </div>
             </section>
@@ -245,15 +215,26 @@ const LearnSubjects = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="preferredTime" className="font-body text-slate-700">
-                    Preferred Time Slot
+                  <Label className="font-body text-slate-700 mb-3 block">
+                    Preferred Start Time
                   </Label>
-                  <Input
-                    id="preferredTime"
-                    {...register("preferredTime")}
-                    placeholder="e.g., 17:00 - 19:00 JST"
-                    className="mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400"
-                  />
+                  <div className="flex flex-wrap gap-2">
+                    {timeSlots.map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => setSelectedTime(time)}
+                        className={cn(
+                          "px-5 py-2.5 rounded-full border text-sm font-body transition-all duration-200",
+                          selectedTime === time
+                            ? "bg-blue-600 text-white border-blue-600 shadow-md animate-[bounce_0.3s_ease-out]"
+                            : "bg-white text-slate-600 border-slate-300 hover:border-blue-300 hover:bg-blue-50"
+                        )}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
