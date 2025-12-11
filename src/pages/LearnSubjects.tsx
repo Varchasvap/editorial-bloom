@@ -24,7 +24,7 @@ import {
 import { Calculator, Atom, BookOpen, Globe, MoreHorizontal, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { TimeDrumPicker } from "@/components/TimeDrumPicker";
+import { CompactTimeSelector } from "@/components/CompactTimeSelector";
 import { toast } from "sonner";
 
 // Initialize EmailJS
@@ -61,10 +61,28 @@ const LearnSubjects = () => {
   const [flexibleTime, setFlexibleTime] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>();
 
+  const validateForm = (data: FormData) => {
+    const newErrors: Record<string, boolean> = {};
+    
+    if (!data.studentName?.trim()) newErrors.studentName = true;
+    if (!data.email?.trim()) newErrors.email = true;
+    if (!selectedSubject) newErrors.subject = true;
+    if (!flexibleTime && !selectedTime) newErrors.time = true;
+    
+    setValidationErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const onSubmit = async (data: FormData) => {
+    if (!validateForm(data)) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
     setIsSubmitting(true);
     
     const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
@@ -74,7 +92,7 @@ const LearnSubjects = () => {
       age: data.age || "Not specified",
       subject: subjectLabel || "General",
       topic: data.topic || "No topic",
-      time_slot: selectedTime || "No time selected",
+      time_slot: flexibleTime ? "Flexible" : (selectedTime || "No time selected"),
       days: selectedDays.length > 0 ? selectedDays.join(", ") : "No days selected",
       contact_email: data.email || "no-email@test.com"
     };
@@ -95,6 +113,7 @@ const LearnSubjects = () => {
       setSelectedDays([]);
       setSelectedTime("17:00 JST");
       setFlexibleTime(false);
+      setValidationErrors({});
       setShowSuccess(true);
     } catch (error: any) {
       console.error("EmailJS Failed:", error);
@@ -114,24 +133,22 @@ const LearnSubjects = () => {
     <div className="relative min-h-screen">
       <LiquidEffectAnimation />
 
-      <main className="relative z-10 px-4 py-12">
-        {/* Back Link */}
-        <div className="max-w-3xl mx-auto mb-6">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-body transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-        </div>
+      {/* Fixed Back Button - Solid White Pill */}
+      <Link
+        to="/"
+        className="fixed top-6 left-6 z-50 inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-full shadow-lg border border-slate-200 hover:shadow-xl transition-shadow"
+      >
+        <ArrowLeft className="w-4 h-4 text-slate-700" />
+        <span className="text-slate-700 font-medium text-sm">Back to Home</span>
+      </Link>
 
+      <main className="relative z-10 px-4 py-12 pt-20">
         {/* Glass Container */}
         <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 p-8 md:p-12">
           {/* Header */}
           <header className="text-center mb-10">
             <h1 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-              Lesson Reservation
+              Sakura Learning Hub
             </h1>
             <p className="font-body text-slate-600">
               Select your subject and preferred time. We will confirm your slot via email.
@@ -141,15 +158,24 @@ const LearnSubjects = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
             {/* Section 1: Choose Subject */}
             <section>
-              <Label className="font-display text-lg text-slate-800 mb-4 block">
-                What do you want to study?
+              <Label className={cn(
+                "font-display text-lg text-slate-800 mb-4 block",
+                validationErrors.subject && "text-rose-600"
+              )}>
+                What do you want to study? <span className="text-rose-500">*</span>
               </Label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              <div className={cn(
+                "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-1 rounded-xl",
+                validationErrors.subject && "ring-2 ring-rose-500"
+              )}>
                 {subjects.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setSelectedSubject(id)}
+                    onClick={() => {
+                      setSelectedSubject(id);
+                      setValidationErrors(prev => ({ ...prev, subject: false }));
+                    }}
                     className={cn(
                       "flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all duration-200",
                       "bg-white hover:bg-blue-50 hover:border-blue-300",
@@ -181,14 +207,26 @@ const LearnSubjects = () => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="studentName" className="font-body text-slate-700">
-                    Student Name
+                  <Label htmlFor="studentName" className={cn(
+                    "font-body text-slate-700",
+                    validationErrors.studentName && "text-rose-600"
+                  )}>
+                    Student Name <span className="text-rose-500">*</span>
                   </Label>
                   <Input
                     id="studentName"
                     {...register("studentName", { required: true })}
                     placeholder="Enter student's name"
-                    className="mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400"
+                    className={cn(
+                      "mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400",
+                      validationErrors.studentName && "border-rose-500 ring-1 ring-rose-500"
+                    )}
+                    onChange={(e) => {
+                      register("studentName").onChange(e);
+                      if (e.target.value.trim()) {
+                        setValidationErrors(prev => ({ ...prev, studentName: false }));
+                      }
+                    }}
                   />
                 </div>
 
@@ -255,12 +293,19 @@ const LearnSubjects = () => {
                 </div>
 
                 <div>
-                  <Label className="font-body text-slate-700 mb-3 block">
-                    Preferred Start Time
+                  <Label className={cn(
+                    "font-body text-slate-700 mb-3 block",
+                    validationErrors.time && !flexibleTime && "text-rose-600"
+                  )}>
+                    Preferred Start Time {!flexibleTime && <span className="text-rose-500">*</span>}
                   </Label>
-                  <TimeDrumPicker 
-                    value={selectedTime} 
-                    onChange={useCallback((time: string) => setSelectedTime(time), [])} 
+                  <CompactTimeSelector
+                    value={selectedTime}
+                    onChange={useCallback((time: string) => {
+                      setSelectedTime(time);
+                      setValidationErrors(prev => ({ ...prev, time: false }));
+                    }, [])}
+                    disabled={flexibleTime}
                   />
                 </div>
 
@@ -268,7 +313,12 @@ const LearnSubjects = () => {
                   <Checkbox
                     id="flexibleTime"
                     checked={flexibleTime}
-                    onCheckedChange={(checked) => setFlexibleTime(checked as boolean)}
+                    onCheckedChange={(checked) => {
+                      setFlexibleTime(checked as boolean);
+                      if (checked) {
+                        setValidationErrors(prev => ({ ...prev, time: false }));
+                      }
+                    }}
                     className="border-slate-400 data-[state=checked]:bg-blue-600"
                   />
                   <Label htmlFor="flexibleTime" className="font-body text-slate-700 cursor-pointer">
@@ -286,7 +336,10 @@ const LearnSubjects = () => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="email" className="font-body text-slate-700">
+                  <Label htmlFor="email" className={cn(
+                    "font-body text-slate-700",
+                    validationErrors.email && "text-rose-600"
+                  )}>
                     Email Address <span className="text-rose-500">*</span>
                   </Label>
                   <Input
@@ -294,7 +347,16 @@ const LearnSubjects = () => {
                     type="email"
                     {...register("email", { required: "Email is required" })}
                     placeholder="your@email.com"
-                    className="mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400"
+                    className={cn(
+                      "mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400",
+                      validationErrors.email && "border-rose-500 ring-1 ring-rose-500"
+                    )}
+                    onChange={(e) => {
+                      register("email").onChange(e);
+                      if (e.target.value.trim()) {
+                        setValidationErrors(prev => ({ ...prev, email: false }));
+                      }
+                    }}
                   />
                   {errors.email && (
                     <p className="text-rose-500 text-sm mt-1">{errors.email.message}</p>
