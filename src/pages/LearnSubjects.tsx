@@ -84,7 +84,7 @@ const LearnSubjects = () => {
     try {
       const result = await emailjs.send(
         "service_fu37bdk",
-        "template_vc0nkdh",
+        "template_6uvrdtx",
         templateParams
       );
 
