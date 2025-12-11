@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 interface FeatureRowProps {
   title: string;
@@ -10,6 +11,7 @@ interface FeatureRowProps {
   imageUrl: string;
   imageAlt: string;
   reversed?: boolean;
+  href?: string;
 }
 
 const buttonColorClasses = {
@@ -27,7 +29,19 @@ export function FeatureRow({
   imageUrl,
   imageAlt,
   reversed = false,
+  href,
 }: FeatureRowProps) {
+  const ButtonContent = (
+    <Button
+      variant={buttonVariant}
+      className={cn(
+        "text-base font-medium px-0 hover:px-4 transition-all",
+        buttonColorClasses[buttonColor]
+      )}
+    >
+      {buttonText}
+    </Button>
+  );
   return (
     <div
       className={cn(
@@ -64,15 +78,7 @@ export function FeatureRow({
           {description}
         </p>
         <div>
-          <Button
-            variant={buttonVariant}
-            className={cn(
-              "text-base font-medium px-0 hover:px-4 transition-all",
-              buttonColorClasses[buttonColor]
-            )}
-          >
-            {buttonText}
-          </Button>
+          {href ? <Link to={href}>{ButtonContent}</Link> : ButtonContent}
         </div>
       </div>
     </div>
