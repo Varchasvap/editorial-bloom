@@ -149,4 +149,13 @@
   .text-shadow-editorial {
     text-shadow: 0 2px 4px hsl(var(--ink) / 0.1);
   }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

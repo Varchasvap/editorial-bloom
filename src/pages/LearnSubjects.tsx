@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 import { Calculator, Atom, BookOpen, Globe, MoreHorizontal, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { TimeDrumPicker } from "@/components/TimeDrumPicker";
 
 const subjects = [
   { id: "math", label: "Math", icon: Calculator },
@@ -33,8 +34,6 @@ const subjects = [
 ];
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-const timeSlots = ["15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"];
 
 const ages = [...Array.from({ length: 13 }, (_, i) => (i + 6).toString()), "Adult"];
 
@@ -53,7 +52,7 @@ interface FormData {
 const LearnSubjects = () => {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("17:00 JST");
   const [flexibleTime, setFlexibleTime] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -218,23 +217,10 @@ const LearnSubjects = () => {
                   <Label className="font-body text-slate-700 mb-3 block">
                     Preferred Start Time
                   </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {timeSlots.map((time) => (
-                      <button
-                        key={time}
-                        type="button"
-                        onClick={() => setSelectedTime(time)}
-                        className={cn(
-                          "px-5 py-2.5 rounded-full border text-sm font-body transition-all duration-200",
-                          selectedTime === time
-                            ? "bg-blue-600 text-white border-blue-600 shadow-md animate-[bounce_0.3s_ease-out]"
-                            : "bg-white text-slate-600 border-slate-300 hover:border-blue-300 hover:bg-blue-50"
-                        )}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
+                  <TimeDrumPicker 
+                    value={selectedTime} 
+                    onChange={useCallback((time: string) => setSelectedTime(time), [])} 
+                  />
                 </div>
 
                 <div className="flex items-center space-x-3">
