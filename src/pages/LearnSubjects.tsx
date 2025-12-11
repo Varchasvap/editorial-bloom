@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
+import emailjs from "@emailjs/browser";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,10 @@ import { Calculator, Atom, BookOpen, Globe, MoreHorizontal, ArrowLeft } from "lu
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { TimeDrumPicker } from "@/components/TimeDrumPicker";
+import { toast } from "sonner";
+
+// Initialize EmailJS
+emailjs.init("pB-Ip7Hzn8CkafusZ");
 
 const subjects = [
   { id: "math", label: "Math", icon: Calculator },
@@ -55,12 +60,42 @@ const LearnSubjects = () => {
   const [selectedTime, setSelectedTime] = useState<string>("17:00 JST");
   const [flexibleTime, setFlexibleTime] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>();
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", { ...data, subject: selectedSubject, preferredDays: selectedDays, preferredTime: selectedTime, flexibleTime });
-    setShowSuccess(true);
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
+    try {
+      const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
+      
+      await emailjs.send(
+        "service_fu37bdk",
+        "template_vc0nkdh",
+        {
+          from_name: data.studentName,
+          age: data.age,
+          subject: subjectLabel,
+          topic: data.topic,
+          time_slot: selectedTime,
+          days: selectedDays.join(", "),
+          contact_email: data.email
+        }
+      );
+
+      toast.success("Request Sent! We will email you shortly to confirm.");
+      reset();
+      setSelectedSubject("");
+      setSelectedDays([]);
+      setSelectedTime("17:00 JST");
+      setFlexibleTime(false);
+      setShowSuccess(true);
+    } catch (error) {
+      console.error("Email Error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleDay = (day: string) => {
@@ -277,9 +312,10 @@ const LearnSubjects = () => {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full py-6 text-lg font-display bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+              disabled={isSubmitting}
+              className="w-full py-6 text-lg font-display bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg disabled:opacity-50"
             >
-              Send Booking Request
+              {isSubmitting ? "Sending..." : "Send Booking Request"}
             </Button>
           </form>
         </div>
