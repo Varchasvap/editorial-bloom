@@ -35,7 +35,7 @@ const Index = () => {
             {/* Row 2: Fund Girl's Education (Reversed) */}
             <FeatureRow
               title="Fund Girl's Education"
-              description="Your gift funds education for poor girls in India—covering school fees and books."
+              description="Your donation empowers education for underprivileged girls in India, covering school fees and books."
               buttonText="Contribute →"
               buttonVariant="ghost"
               buttonColor="rose"
