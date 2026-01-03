@@ -26,19 +26,18 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { CompactTimeSelector } from "@/components/CompactTimeSelector";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Initialize EmailJS
 emailjs.init("pB-Ip7Hzn8CkafusZ");
 
-const subjects = [
-  { id: "math", label: "Math", icon: Calculator },
-  { id: "science", label: "Science", icon: Atom },
-  { id: "english", label: "English Support", icon: BookOpen },
-  { id: "social", label: "Social Studies", icon: Globe },
-  { id: "other", label: "Other", icon: MoreHorizontal },
-];
-
-
+const subjectIcons = {
+  math: Calculator,
+  science: Atom,
+  english: BookOpen,
+  social: Globe,
+  other: MoreHorizontal,
+};
 
 const ages = [...Array.from({ length: 13 }, (_, i) => (i + 6).toString()), "Adult"];
 
@@ -55,6 +54,7 @@ interface FormData {
 }
 
 const LearnSubjects = () => {
+  const { t } = useLanguage();
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("17:00 JST");
@@ -64,6 +64,14 @@ const LearnSubjects = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>();
+
+  const subjects = [
+    { id: "math", label: t("learnSubjects.subjects.math"), icon: subjectIcons.math },
+    { id: "science", label: t("learnSubjects.subjects.science"), icon: subjectIcons.science },
+    { id: "english", label: t("learnSubjects.subjects.english"), icon: subjectIcons.english },
+    { id: "social", label: t("learnSubjects.subjects.social"), icon: subjectIcons.social },
+    { id: "other", label: t("learnSubjects.subjects.other"), icon: subjectIcons.other },
+  ];
 
   const validateForm = (data: FormData) => {
     const newErrors: Record<string, boolean> = {};
@@ -80,7 +88,7 @@ const LearnSubjects = () => {
 
   const onSubmit = async (data: FormData) => {
     if (!validateForm(data)) {
-      toast.error("Please fill in all required fields.");
+      toast.error(t("learnSubjects.validationError"));
       return;
     }
 
@@ -111,7 +119,7 @@ const LearnSubjects = () => {
       );
 
       console.log("EmailJS Success:", result.text);
-      toast.success("Request Sent! We will email you shortly.");
+      toast.success(t("learnSubjects.toastSuccess"));
       reset();
       setSelectedSubject("");
       setSelectedDate("");
@@ -121,7 +129,7 @@ const LearnSubjects = () => {
       setShowSuccess(true);
     } catch (error: any) {
       console.error("EmailJS Failed:", error);
-      toast.error(`Error: ${error.text || error.message || "Connection failed"}`);
+      toast.error(t("learnSubjects.toastError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -138,7 +146,7 @@ const LearnSubjects = () => {
         className="fixed top-6 left-6 z-50 inline-flex items-center gap-2 px-5 py-2.5 bg-white rounded-full shadow-lg border border-slate-200 hover:shadow-xl transition-shadow"
       >
         <ArrowLeft className="w-4 h-4 text-slate-700" />
-        <span className="text-slate-700 font-medium text-sm">Back to Home</span>
+        <span className="text-slate-700 font-medium text-sm">{t("learnSubjects.backToHome")}</span>
       </Link>
 
       <main className="relative z-10 px-4 py-12 pt-20">
@@ -147,10 +155,10 @@ const LearnSubjects = () => {
           {/* Header */}
           <header className="text-center mb-10">
             <h1 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-              Sakura Learning Hub
+              {t("learnSubjects.pageTitle")}
             </h1>
             <p className="font-body text-slate-600">
-              Select your subject and preferred time. We will confirm your slot via email.
+              {t("learnSubjects.pageSubtitle")}
             </p>
           </header>
 
@@ -161,7 +169,7 @@ const LearnSubjects = () => {
                 "font-display text-lg text-slate-800 mb-4 block",
                 validationErrors.subject && "text-rose-600"
               )}>
-                What do you want to study? <span className="text-rose-500">*</span>
+                {t("learnSubjects.whatToStudy")} <span className="text-rose-500">*</span>
               </Label>
               <div className={cn(
                 "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 p-1 rounded-xl",
@@ -201,7 +209,7 @@ const LearnSubjects = () => {
             {/* Section 2: Student Details */}
             <section className="space-y-5">
               <h2 className="font-display text-lg text-slate-800 border-b border-slate-200 pb-2">
-                Student Details
+                {t("learnSubjects.studentDetails")}
               </h2>
 
               <div className="space-y-4">
@@ -210,12 +218,12 @@ const LearnSubjects = () => {
                     "font-body text-slate-700",
                     validationErrors.studentName && "text-rose-600"
                   )}>
-                    Student Name <span className="text-rose-500">*</span>
+                    {t("learnSubjects.studentName")} <span className="text-rose-500">*</span>
                   </Label>
                   <Input
                     id="studentName"
                     {...register("studentName", { required: true })}
-                    placeholder="Enter student's name"
+                    placeholder={t("learnSubjects.studentNamePlaceholder")}
                     className={cn(
                       "mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400",
                       validationErrors.studentName && "border-rose-500 ring-1 ring-rose-500"
@@ -231,11 +239,11 @@ const LearnSubjects = () => {
 
                 <div>
                   <Label htmlFor="age" className="font-body text-slate-700">
-                    Age
+                    {t("learnSubjects.age")}
                   </Label>
                   <Select onValueChange={(val) => setValue("age", val)}>
                     <SelectTrigger className="mt-1.5 bg-white border-slate-300 text-slate-900">
-                      <SelectValue placeholder="Select age" />
+                      <SelectValue placeholder={t("learnSubjects.selectAge")} />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-slate-200">
                       {ages.map((age) => (
@@ -249,12 +257,12 @@ const LearnSubjects = () => {
 
                 <div>
                   <Label htmlFor="topic" className="font-body text-slate-700">
-                    Topic
+                    {t("learnSubjects.topic")}
                   </Label>
                   <Textarea
                     id="topic"
                     {...register("topic")}
-                    placeholder="What do you want to learn today?"
+                    placeholder={t("learnSubjects.topicPlaceholder")}
                     className="mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 min-h-[80px]"
                   />
                 </div>
@@ -264,7 +272,7 @@ const LearnSubjects = () => {
             {/* Section 3: Time Preferences */}
             <section className="space-y-5">
               <h2 className="font-display text-lg text-slate-800 border-b border-slate-200 pb-2">
-                Time Preferences
+                {t("learnSubjects.timePreferences")}
               </h2>
 
               <div className="space-y-4">
@@ -273,7 +281,7 @@ const LearnSubjects = () => {
                     "font-body text-slate-700 mb-3 block",
                     validationErrors.date && "text-rose-600"
                   )}>
-                    Preferred Date <span className="text-rose-500">*</span>
+                    {t("learnSubjects.preferredDate")} <span className="text-rose-500">*</span>
                   </Label>
                   <input
                     type="date"
@@ -295,7 +303,7 @@ const LearnSubjects = () => {
                     "font-body text-slate-700 mb-3 block",
                     validationErrors.time && "text-rose-600"
                   )}>
-                    Preferred Start Time <span className="text-rose-500">*</span>
+                    {t("learnSubjects.preferredTime")} <span className="text-rose-500">*</span>
                   </Label>
                   <CompactTimeSelector
                     value={selectedTime}
@@ -316,7 +324,7 @@ const LearnSubjects = () => {
                     className="border-slate-400 data-[state=checked]:bg-blue-600"
                   />
                   <Label htmlFor="flexibleTime" className="font-body text-slate-700 cursor-pointer">
-                    I am flexible (Open to rescheduling)
+                    {t("learnSubjects.flexibleTime")}
                   </Label>
                 </div>
               </div>
@@ -325,7 +333,7 @@ const LearnSubjects = () => {
             {/* Section 4: Contact Info */}
             <section className="space-y-5">
               <h2 className="font-display text-lg text-slate-800 border-b border-slate-200 pb-2">
-                Contact Information
+                {t("learnSubjects.contactInfo")}
               </h2>
 
               <div className="space-y-4">
@@ -334,13 +342,13 @@ const LearnSubjects = () => {
                     "font-body text-slate-700",
                     validationErrors.email && "text-rose-600"
                   )}>
-                    Email Address <span className="text-rose-500">*</span>
+                    {t("learnSubjects.email")} <span className="text-rose-500">*</span>
                   </Label>
                   <Input
                     id="email"
                     type="email"
                     {...register("email", { required: "Email is required" })}
-                    placeholder="your@email.com"
+                    placeholder={t("learnSubjects.emailPlaceholder")}
                     className={cn(
                       "mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400",
                       validationErrors.email && "border-rose-500 ring-1 ring-rose-500"
@@ -359,12 +367,12 @@ const LearnSubjects = () => {
 
                 <div>
                   <Label htmlFor="lineOrPhone" className="font-body text-slate-700">
-                    LINE ID or Phone <span className="text-slate-400">(Optional)</span>
+                    {t("learnSubjects.lineOrPhone")} <span className="text-slate-400">{t("learnSubjects.optional")}</span>
                   </Label>
                   <Input
                     id="lineOrPhone"
                     {...register("lineOrPhone")}
-                    placeholder="LINE ID or phone number"
+                    placeholder={t("learnSubjects.lineOrPhonePlaceholder")}
                     className="mt-1.5 bg-white border-slate-300 text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
@@ -377,7 +385,7 @@ const LearnSubjects = () => {
               disabled={isSubmitting}
               className="w-full py-6 text-lg font-display bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg disabled:opacity-50"
             >
-              {isSubmitting ? "Sending..." : "Send Booking Request"}
+              {isSubmitting ? t("learnSubjects.submitting") : t("learnSubjects.submit")}
             </Button>
           </form>
         </div>
@@ -388,16 +396,16 @@ const LearnSubjects = () => {
         <DialogContent className="bg-white border-slate-200">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl text-slate-900">
-              Thank You!
+              {t("learnSubjects.successTitle")}
             </DialogTitle>
             <DialogDescription className="font-body text-slate-600 text-base">
-              Your request has been sent. We will email you shortly to confirm your lesson time.
+              {t("learnSubjects.successDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4">
             <Link to="/">
               <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                Back to Home
+                {t("learnSubjects.backToHome")}
               </Button>
             </Link>
           </div>

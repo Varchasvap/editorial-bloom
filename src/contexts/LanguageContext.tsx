@@ -61,6 +61,43 @@ const translations: Record<Language, Record<string, any>> = {
         description: "Explore travel insights, cultural wisdom, and the beauty of the Rising Sun.",
         button: "Explore →"
       }
+    },
+    learnSubjects: {
+      pageTitle: "Sakura Learning Hub",
+      pageSubtitle: "Select your subject and preferred time. We will confirm your slot via email.",
+      backToHome: "Back to Home",
+      whatToStudy: "What do you want to study?",
+      subjects: {
+        math: "Math",
+        science: "Science",
+        english: "English Support",
+        social: "Social Studies",
+        other: "Other"
+      },
+      studentDetails: "Student Details",
+      studentName: "Student Name",
+      studentNamePlaceholder: "Enter student's name",
+      age: "Age",
+      selectAge: "Select age",
+      topic: "Topic",
+      topicPlaceholder: "What do you want to learn today?",
+      timePreferences: "Time Preferences",
+      preferredDate: "Preferred Date",
+      preferredTime: "Preferred Start Time",
+      flexibleTime: "I am flexible (Open to rescheduling)",
+      contactInfo: "Contact Information",
+      email: "Email Address",
+      emailPlaceholder: "your@email.com",
+      lineOrPhone: "LINE ID or Phone",
+      lineOrPhonePlaceholder: "LINE ID or phone number",
+      optional: "(Optional)",
+      submit: "Send Booking Request",
+      submitting: "Sending...",
+      validationError: "Please fill in all required fields.",
+      successTitle: "Thank You!",
+      successDescription: "Your request has been sent. We will email you shortly to confirm your lesson time.",
+      toastSuccess: "Request Sent! We will email you shortly.",
+      toastError: "Error: Connection failed"
     }
   },
   jp: {
@@ -84,6 +121,43 @@ const translations: Record<Language, Record<string, any>> = {
         description: "旅行の知識、文化的知恵、そして日出ずる国の美しさを探索しましょう。",
         button: "探索する →"
       }
+    },
+    learnSubjects: {
+      pageTitle: "サクラ・ラーニング・ハブ",
+      pageSubtitle: "科目とご希望の時間を選択してください。メールで確認のご連絡をいたします。",
+      backToHome: "ホームに戻る",
+      whatToStudy: "何を勉強したいですか？",
+      subjects: {
+        math: "数学",
+        science: "理科",
+        english: "英語サポート",
+        social: "社会",
+        other: "その他"
+      },
+      studentDetails: "生徒情報",
+      studentName: "生徒名",
+      studentNamePlaceholder: "生徒の名前を入力",
+      age: "年齢",
+      selectAge: "年齢を選択",
+      topic: "トピック",
+      topicPlaceholder: "今日は何を学びたいですか？",
+      timePreferences: "時間の希望",
+      preferredDate: "希望日",
+      preferredTime: "希望開始時間",
+      flexibleTime: "柔軟に対応可能（日程変更可）",
+      contactInfo: "連絡先情報",
+      email: "メールアドレス",
+      emailPlaceholder: "your@email.com",
+      lineOrPhone: "LINE IDまたは電話番号",
+      lineOrPhonePlaceholder: "LINE IDまたは電話番号",
+      optional: "（任意）",
+      submit: "予約リクエストを送信",
+      submitting: "送信中...",
+      validationError: "必須項目をすべて入力してください。",
+      successTitle: "ありがとうございます！",
+      successDescription: "リクエストを受け付けました。レッスン時間の確認のため、メールでご連絡いたします。",
+      toastSuccess: "リクエスト送信完了！まもなくメールでご連絡いたします。",
+      toastError: "エラー：接続に失敗しました"
     }
   }
 };
