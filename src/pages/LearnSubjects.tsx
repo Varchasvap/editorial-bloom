@@ -26,6 +26,7 @@ import { Calculator, Atom, BookOpen, Globe, MoreHorizontal, ArrowLeft } from "lu
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { CompactTimeSelector } from "@/components/CompactTimeSelector";
+import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -461,6 +462,8 @@ const LearnSubjects = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Footer />
     </div>
   );
 };

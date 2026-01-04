@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-import { ArrowLeft, LogOut, Check, X } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -26,6 +26,7 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
 
@@ -75,21 +76,35 @@ const Admin = () => {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isSignUp) {
+        const redirectUrl = `${window.location.origin}/admin`;
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl,
+          },
+        });
 
-      if (error) throw error;
-      toast.success(t("admin.loginSuccess"));
+        if (error) throw error;
+        toast.success(t("admin.signupSuccess"));
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        toast.success(t("admin.loginSuccess"));
+      }
     } catch (error: any) {
-      console.error("Login error:", error);
-      toast.error(error.message || t("admin.loginError"));
+      console.error("Auth error:", error);
+      toast.error(error.message || (isSignUp ? t("admin.signupError") : t("admin.loginError")));
     } finally {
       setAuthLoading(false);
     }
@@ -142,12 +157,6 @@ const Admin = () => {
     }
   };
 
-  const isDateAvailable = (date: Date) => {
-    return availableDates.some(
-      (d) => d.toISOString().split("T")[0] === date.toISOString().split("T")[0]
-    );
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -156,7 +165,7 @@ const Admin = () => {
     );
   }
 
-  // Login Form
+  // Login/Signup Form
   if (!user) {
     return (
       <div className="relative min-h-screen">
@@ -172,16 +181,44 @@ const Admin = () => {
 
         <main className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 p-8">
+            {/* Tab Switcher */}
+            <div className="flex mb-6 bg-slate-100 rounded-xl p-1">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(false)}
+                className={cn(
+                  "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
+                  !isSignUp
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                )}
+              >
+                {t("admin.signIn")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsSignUp(true)}
+                className={cn(
+                  "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
+                  isSignUp
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                )}
+              >
+                {t("admin.signUp")}
+              </button>
+            </div>
+
             <header className="text-center mb-8">
               <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-                {t("admin.loginTitle")}
+                {isSignUp ? t("admin.signupTitle") : t("admin.loginTitle")}
               </h1>
               <p className="font-body text-slate-600 text-sm">
-                {t("admin.loginSubtitle")}
+                {isSignUp ? t("admin.signupSubtitle") : t("admin.loginSubtitle")}
               </p>
             </header>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleAuth} className="space-y-5">
               <div>
                 <Label htmlFor="email" className="font-body text-slate-700">
                   {t("admin.email")}
@@ -208,8 +245,12 @@ const Admin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  minLength={6}
                   className="mt-1.5 bg-white border-slate-300 text-slate-900"
                 />
+                {isSignUp && (
+                  <p className="text-xs text-slate-500 mt-1">{t("admin.passwordHint")}</p>
+                )}
               </div>
 
               <Button
@@ -217,7 +258,9 @@ const Admin = () => {
                 disabled={authLoading}
                 className="w-full py-5 font-display bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
               >
-                {authLoading ? t("admin.signingIn") : t("admin.signIn")}
+                {authLoading
+                  ? (isSignUp ? t("admin.signingUp") : t("admin.signingIn"))
+                  : (isSignUp ? t("admin.signUp") : t("admin.signIn"))}
               </Button>
             </form>
           </div>
@@ -252,7 +295,7 @@ const Admin = () => {
       <main className="relative z-10 px-4 py-12 pt-20">
         <div className="max-w-2xl mx-auto bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 p-8 md:p-12">
           {/* Header */}
-          <header className="text-center mb-8">
+          <header className="text-center mb-6">
             <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900 mb-2">
               {t("admin.dashboardTitle")}
             </h1>
@@ -261,20 +304,33 @@ const Admin = () => {
             </p>
           </header>
 
-          {/* Legend */}
-          <div className="flex justify-center gap-6 mb-6">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center">
-                <Check className="w-4 h-4 text-white" />
+          {/* Enhanced Legend */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 mb-8 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center shadow-md">
+                <span className="text-white text-lg">🟢</span>
               </div>
-              <span className="font-body text-sm text-slate-700">{t("admin.available")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-slate-200 flex items-center justify-center">
-                <X className="w-4 h-4 text-slate-400" />
+              <div>
+                <p className="font-display text-sm font-semibold text-emerald-700">{t("admin.legendAvailable")}</p>
+                <p className="font-body text-xs text-slate-500">{t("admin.legendAvailableDesc")}</p>
               </div>
-              <span className="font-body text-sm text-slate-700">{t("admin.blocked")}</span>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center shadow-md">
+                <span className="text-slate-400 text-lg">⚪</span>
+              </div>
+              <div>
+                <p className="font-display text-sm font-semibold text-slate-700">{t("admin.legendBlocked")}</p>
+                <p className="font-body text-xs text-slate-500">{t("admin.legendBlockedDesc")}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="text-center mb-6">
+            <p className="font-body text-sm text-slate-600">
+              {t("admin.totalAvailable")}: <span className="font-semibold text-emerald-600">{availableDates.length}</span> {t("admin.days")}
+            </p>
           </div>
 
           {/* Calendar */}
@@ -304,7 +360,7 @@ const Admin = () => {
           {/* Instructions */}
           <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
             <p className="font-body text-sm text-blue-800 text-center">
-              {t("admin.instructions")}
+              💡 {t("admin.instructions")}
             </p>
           </div>
         </div>
