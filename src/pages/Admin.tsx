@@ -26,7 +26,6 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
 
@@ -81,30 +80,16 @@ const Admin = () => {
     setAuthLoading(true);
 
     try {
-      if (isSignUp) {
-        const redirectUrl = `${window.location.origin}/admin`;
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectUrl,
-          },
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
-        toast.success(t("admin.signupSuccess"));
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-        toast.success(t("admin.loginSuccess"));
-      }
+      if (error) throw error;
+      toast.success(t("admin.loginSuccess"));
     } catch (error: any) {
       console.error("Auth error:", error);
-      toast.error(error.message || (isSignUp ? t("admin.signupError") : t("admin.loginError")));
+      toast.error(error.message || t("admin.loginError"));
     } finally {
       setAuthLoading(false);
     }
@@ -181,40 +166,12 @@ const Admin = () => {
 
         <main className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 p-8">
-            {/* Tab Switcher */}
-            <div className="flex mb-6 bg-slate-100 rounded-xl p-1">
-              <button
-                type="button"
-                onClick={() => setIsSignUp(false)}
-                className={cn(
-                  "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
-                  !isSignUp
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700"
-                )}
-              >
-                {t("admin.signIn")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsSignUp(true)}
-                className={cn(
-                  "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
-                  isSignUp
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700"
-                )}
-              >
-                {t("admin.signUp")}
-              </button>
-            </div>
-
             <header className="text-center mb-8">
               <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-                {isSignUp ? t("admin.signupTitle") : t("admin.loginTitle")}
+                {t("admin.loginTitle")}
               </h1>
               <p className="font-body text-slate-600 text-sm">
-                {isSignUp ? t("admin.signupSubtitle") : t("admin.loginSubtitle")}
+                {t("admin.loginSubtitle")}
               </p>
             </header>
 
@@ -248,9 +205,6 @@ const Admin = () => {
                   minLength={6}
                   className="mt-1.5 bg-white border-slate-300 text-slate-900"
                 />
-                {isSignUp && (
-                  <p className="text-xs text-slate-500 mt-1">{t("admin.passwordHint")}</p>
-                )}
               </div>
 
               <Button
@@ -258,9 +212,7 @@ const Admin = () => {
                 disabled={authLoading}
                 className="w-full py-5 font-display bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
               >
-                {authLoading
-                  ? (isSignUp ? t("admin.signingUp") : t("admin.signingIn"))
-                  : (isSignUp ? t("admin.signUp") : t("admin.signIn"))}
+                {authLoading ? t("admin.signingIn") : t("admin.signIn")}
               </Button>
             </form>
           </div>
