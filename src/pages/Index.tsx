@@ -1,15 +1,16 @@
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { FeatureRow } from "@/components/FeatureRow";
+import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen flex flex-col">
       <LiquidEffectAnimation />
       
-      <main className="relative z-10">
+      <main className="relative z-10 flex-1">
         {/* Hero Section */}
         <section className="min-h-[50vh] flex flex-col items-center justify-center px-6 pt-20 pb-12">
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 text-center tracking-tight leading-tight">
@@ -60,6 +61,8 @@ const Index = () => {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 };
