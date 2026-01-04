@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import emailjs from "@emailjs/browser";
+import { supabase } from "@/integrations/supabase/client";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,8 +63,33 @@ const LearnSubjects = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [loadingAvailability, setLoadingAvailability] = useState(true);
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>();
+
+  // Fetch available dates from database
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("availability")
+          .select("date")
+          .eq("is_available", true);
+
+        if (error) throw error;
+
+        const dates = data?.map((record) => record.date) || [];
+        setAvailableDates(dates);
+      } catch (error) {
+        console.error("Error fetching availability:", error);
+      } finally {
+        setLoadingAvailability(false);
+      }
+    };
+
+    fetchAvailability();
+  }, []);
 
   const subjects = [
     { id: "math", label: t("learnSubjects.subjects.math"), icon: subjectIcons.math },
@@ -283,19 +309,43 @@ const LearnSubjects = () => {
                   )}>
                     {t("learnSubjects.preferredDate")} <span className="text-rose-500">*</span>
                   </Label>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => {
-                      setSelectedDate(e.target.value);
-                      setValidationErrors(prev => ({ ...prev, date: false }));
-                    }}
-                    min={new Date().toISOString().split('T')[0]}
-                    className={cn(
-                      "w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-700 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:outline-none",
-                      validationErrors.date && "border-rose-500 ring-1 ring-rose-500"
-                    )}
-                  />
+                  {loadingAvailability ? (
+                    <div className="w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-400 backdrop-blur-sm animate-pulse">
+                      Loading available dates...
+                    </div>
+                  ) : availableDates.length === 0 ? (
+                    <div className="w-full bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-700">
+                      {t("learnSubjects.noAvailableDates")}
+                    </div>
+                  ) : (
+                    <select
+                      value={selectedDate}
+                      onChange={(e) => {
+                        setSelectedDate(e.target.value);
+                        setValidationErrors(prev => ({ ...prev, date: false }));
+                      }}
+                      className={cn(
+                        "w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-700 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:outline-none",
+                        validationErrors.date && "border-rose-500 ring-1 ring-rose-500",
+                        !selectedDate && "text-slate-400"
+                      )}
+                    >
+                      <option value="" disabled>Select an available date</option>
+                      {availableDates
+                        .filter((date) => new Date(date) >= new Date(new Date().toISOString().split("T")[0]))
+                        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+                        .map((date) => (
+                          <option key={date} value={date}>
+                            {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </option>
+                        ))}
+                    </select>
+                  )}
                 </div>
 
                 <div>

@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import Index from "./pages/Index";
 import LearnSubjects from "./pages/LearnSubjects";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -14,14 +15,15 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <LanguageProvider>
+        <Toaster />
+        <Sonner />
         <LanguageSwitcher />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-subjects" element={<LearnSubjects />} />
+            <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

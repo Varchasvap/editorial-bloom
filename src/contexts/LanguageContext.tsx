@@ -97,7 +97,31 @@ const translations: Record<Language, Record<string, any>> = {
       successTitle: "Thank You!",
       successDescription: "Your request has been sent. We will email you shortly to confirm your lesson time.",
       toastSuccess: "Request Sent! We will email you shortly.",
-      toastError: "Error: Connection failed"
+      toastError: "Error: Connection failed",
+      noAvailableDates: "No available dates at the moment. Please check back later."
+    },
+    admin: {
+      loading: "Loading...",
+      backToHome: "Back to Home",
+      loginTitle: "Admin Login",
+      loginSubtitle: "Sign in to manage your availability calendar",
+      email: "Email",
+      password: "Password",
+      signIn: "Sign In",
+      signingIn: "Signing in...",
+      loginSuccess: "Welcome back!",
+      loginError: "Login failed. Please check your credentials.",
+      logoutSuccess: "Logged out successfully",
+      logout: "Logout",
+      dashboardTitle: "Availability Manager",
+      dashboardSubtitle: "Click dates to toggle availability for students",
+      available: "Available",
+      blocked: "Busy/Blocked",
+      dateAdded: "Date marked as available!",
+      dateRemoved: "Date removed from availability",
+      fetchError: "Failed to load availability",
+      updateError: "Failed to update availability",
+      instructions: "Click a date to make it available (green). Click again to remove it."
     }
   },
   jp: {
@@ -157,7 +181,31 @@ const translations: Record<Language, Record<string, any>> = {
       successTitle: "ありがとうございます！",
       successDescription: "リクエストを受け付けました。レッスン時間の確認のため、メールでご連絡いたします。",
       toastSuccess: "リクエスト送信完了！まもなくメールでご連絡いたします。",
-      toastError: "エラー：接続に失敗しました"
+      toastError: "エラー：接続に失敗しました",
+      noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。"
+    },
+    admin: {
+      loading: "読み込み中...",
+      backToHome: "ホームに戻る",
+      loginTitle: "管理者ログイン",
+      loginSubtitle: "カレンダーを管理するためにサインインしてください",
+      email: "メールアドレス",
+      password: "パスワード",
+      signIn: "サインイン",
+      signingIn: "サインイン中...",
+      loginSuccess: "おかえりなさい！",
+      loginError: "ログインに失敗しました。認証情報を確認してください。",
+      logoutSuccess: "ログアウトしました",
+      logout: "ログアウト",
+      dashboardTitle: "予約可能日管理",
+      dashboardSubtitle: "日付をクリックして生徒への公開状態を切り替えます",
+      available: "予約可能",
+      blocked: "予定あり/ブロック",
+      dateAdded: "予約可能日として追加しました！",
+      dateRemoved: "予約可能日から削除しました",
+      fetchError: "予約可能日の読み込みに失敗しました",
+      updateError: "予約可能日の更新に失敗しました",
+      instructions: "日付をクリックして予約可能（緑）にします。もう一度クリックで削除します。"
     }
   }
 };
