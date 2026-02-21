@@ -95,7 +95,7 @@ const translations: Record<Language, Record<string, any>> = {
       submitting: "Sending...",
       validationError: "Please fill in all required fields.",
       successTitle: "Thank You!",
-      successDescription: "Your request has been sent. We will email you shortly to confirm your lesson time.",
+      successDescription: "Thank you for booking! You will be notified via email shortly.",
       toastSuccess: "Request Sent! We will email you shortly.",
       toastError: "Error: Connection failed",
       noAvailableDates: "No available dates at the moment. Please check back later."
@@ -193,7 +193,7 @@ const translations: Record<Language, Record<string, any>> = {
       submitting: "送信中...",
       validationError: "必須項目をすべて入力してください。",
       successTitle: "ありがとうございます！",
-      successDescription: "リクエストを受け付けました。レッスン時間の確認のため、メールでご連絡いたします。",
+      successDescription: "ご予約ありがとうございます！まもなくメールでご連絡いたします。",
       toastSuccess: "リクエスト送信完了！まもなくメールでご連絡いたします。",
       toastError: "エラー：接続に失敗しました",
       noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。"
