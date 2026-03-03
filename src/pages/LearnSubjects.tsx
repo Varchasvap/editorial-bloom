@@ -351,6 +351,9 @@ const LearnSubjects = () => {
               </div>
             </section>
 
+            {/* Section 2.5: File Upload */}
+            <FileUploadZone files={uploadedFiles} onFilesChange={setUploadedFiles} />
+
             {/* Section 3: Time Preferences */}
             <section className="space-y-5">
               <h2 className="font-display text-lg text-slate-800 border-b border-slate-200 pb-2">
