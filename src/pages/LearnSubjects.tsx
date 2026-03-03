@@ -29,6 +29,7 @@ import { CompactTimeSelector } from "@/components/CompactTimeSelector";
 import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { FileUploadZone, type SelectedFile } from "@/components/FileUploadZone";
 
 // Initialize EmailJS
 emailjs.init("pB-Ip7Hzn8CkafusZ");
@@ -66,6 +67,7 @@ const LearnSubjects = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
+  const [uploadedFiles, setUploadedFiles] = useState<SelectedFile[]>([]);
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>();
 
@@ -124,7 +126,48 @@ const LearnSubjects = () => {
     const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
     const dateString = selectedDate ? new Date(selectedDate).toLocaleDateString() : "No Date Selected";
     const flexibilityNote = flexibleTime ? "Yes - Open to rescheduling" : "No - Fixed time only";
-    
+
+    // Upload files to storage
+    const fileResults: { name: string; url: string; size: number; type: string }[] = [];
+    let uploadFailed = false;
+
+    for (const { file } of uploadedFiles) {
+      const filePath = `${Date.now()}_${file.name}`;
+      const { error } = await supabase.storage
+        .from("student-materials")
+        .upload(filePath, file);
+
+      if (error) {
+        console.error("File upload error:", error);
+        uploadFailed = true;
+        continue;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("student-materials")
+        .getPublicUrl(filePath);
+
+      fileResults.push({
+        name: file.name,
+        url: urlData.publicUrl,
+        size: file.size,
+        type: file.type,
+      });
+    }
+
+    if (uploadFailed && uploadedFiles.length > 0) {
+      toast.error(t("learnSubjects.upload.uploadFailed"));
+    }
+
+    // Format file list for email
+    const formatSize = (bytes: number) =>
+      bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+    const uploaded_files_list = fileResults.length > 0
+      ? "📎 UPLOADED FILES:\nClick the links below to view/download:\n\n" +
+        fileResults.map((f, i) => `${i + 1}. ${f.name} (${formatSize(f.size)})\n   👉 ${f.url}`).join("\n\n")
+      : "📎 No files uploaded";
+
     const templateParams = {
       from_name: data.studentName || "Unknown Name",
       age: data.age || "Not specified",
@@ -133,29 +176,41 @@ const LearnSubjects = () => {
       time_slot: selectedTime || "No specific time picked",
       date: dateString,
       contact_email: data.email || "no-email@test.com",
-      is_flexible: flexibilityNote
+      is_flexible: flexibilityNote,
+      uploaded_files_list,
     };
-    
-    console.log("Attempting to send booking data:", templateParams);
 
     try {
-      const result = await emailjs.send(
-        "service_fu37bdk",
-        "template_6uvrdtx",
-        templateParams
-      );
+      // Save to database
+      const { error: dbError } = await supabase.from("bookings").insert({
+        student_name: data.studentName,
+        student_email: data.email,
+        age: data.age || null,
+        subject: selectedSubject,
+        topic: data.topic || null,
+        date: selectedDate,
+        time_slot: selectedTime,
+        line_or_phone: data.lineOrPhone || null,
+        is_flexible: flexibleTime,
+        uploaded_files: fileResults.length > 0 ? fileResults : null,
+      });
 
-      console.log("EmailJS Success:", result.text);
+      if (dbError) console.error("DB insert error:", dbError);
+
+      // Send email
+      await emailjs.send("service_fu37bdk", "template_6uvrdtx", templateParams);
+
       toast.success(t("learnSubjects.toastSuccess"));
       reset();
       setSelectedSubject("");
       setSelectedDate("");
       setSelectedTime("17:00 JST");
       setFlexibleTime(false);
+      setUploadedFiles([]);
       setValidationErrors({});
       setShowSuccess(true);
     } catch (error: any) {
-      console.error("EmailJS Failed:", error);
+      console.error("Submission Failed:", error);
       toast.error(t("learnSubjects.toastError"));
     } finally {
       setIsSubmitting(false);
@@ -295,6 +350,9 @@ const LearnSubjects = () => {
                 </div>
               </div>
             </section>
+
+            {/* Section 2.5: File Upload */}
+            <FileUploadZone files={uploadedFiles} onFilesChange={setUploadedFiles} />
 
             {/* Section 3: Time Preferences */}
             <section className="space-y-5">

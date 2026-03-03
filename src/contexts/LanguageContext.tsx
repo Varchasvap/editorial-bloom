@@ -98,7 +98,18 @@ const translations: Record<Language, Record<string, any>> = {
       successDescription: "Thank you for booking! You will be notified via email shortly.",
       toastSuccess: "Request Sent! We will email you shortly.",
       toastError: "Error: Connection failed",
-      noAvailableDates: "No available dates at the moment. Please check back later."
+      noAvailableDates: "No available dates at the moment. Please check back later.",
+      upload: {
+        title: "Upload Questions/Materials (Optional)",
+        dragDrop: "Drag & drop files here or click to browse",
+        fileTypes: "PDF, Word, Images (max 10MB per file)",
+        maxFiles: "Maximum 3 files",
+        remove: "Remove",
+        uploading: "Uploading...",
+        tooLarge: "File too large (max 10MB)",
+        typeNotAllowed: "File type not allowed",
+        uploadFailed: "Upload failed. Please try again."
+      }
     },
     admin: {
       loading: "Loading...",
@@ -196,7 +207,18 @@ const translations: Record<Language, Record<string, any>> = {
       successDescription: "ご予約ありがとうございます！まもなくメールでご連絡いたします。",
       toastSuccess: "リクエスト送信完了！まもなくメールでご連絡いたします。",
       toastError: "エラー：接続に失敗しました",
-      noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。"
+      noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。",
+      upload: {
+        title: "質問・資料をアップロード（任意）",
+        dragDrop: "ファイルをドラッグ&ドロップまたはクリックして選択",
+        fileTypes: "PDF、Word、画像（1ファイル最大10MB）",
+        maxFiles: "最大3ファイル",
+        remove: "削除",
+        uploading: "アップロード中...",
+        tooLarge: "ファイルが大きすぎます（最大10MB）",
+        typeNotAllowed: "このファイル形式は使用できません",
+        uploadFailed: "アップロードに失敗しました。もう一度お試しください。"
+      }
     },
     admin: {
       loading: "読み込み中...",
