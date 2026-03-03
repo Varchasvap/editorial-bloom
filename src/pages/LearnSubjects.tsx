@@ -29,6 +29,7 @@ import { CompactTimeSelector } from "@/components/CompactTimeSelector";
 import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { FileUploadZone, type SelectedFile } from "@/components/FileUploadZone";
 
 // Initialize EmailJS
 emailjs.init("pB-Ip7Hzn8CkafusZ");
