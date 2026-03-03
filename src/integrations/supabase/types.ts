@@ -35,6 +35,54 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          age: string | null
+          created_at: string | null
+          date: string
+          id: string
+          is_flexible: boolean | null
+          line_or_phone: string | null
+          status: string | null
+          student_email: string
+          student_name: string
+          subject: string
+          time_slot: string
+          topic: string | null
+          uploaded_files: Json | null
+        }
+        Insert: {
+          age?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          is_flexible?: boolean | null
+          line_or_phone?: string | null
+          status?: string | null
+          student_email: string
+          student_name: string
+          subject: string
+          time_slot: string
+          topic?: string | null
+          uploaded_files?: Json | null
+        }
+        Update: {
+          age?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          is_flexible?: boolean | null
+          line_or_phone?: string | null
+          status?: string | null
+          student_email?: string
+          student_name?: string
+          subject?: string
+          time_slot?: string
+          topic?: string | null
+          uploaded_files?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
