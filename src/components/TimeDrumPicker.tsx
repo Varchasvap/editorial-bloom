@@ -23,8 +23,8 @@ export const TimeDrumPicker = ({ value, onChange, disabled = false }: TimeDrumPi
   const [selectedMinute, setSelectedMinute] = useState("00");
   const hourRef = useRef<HTMLDivElement>(null);
   const minuteRef = useRef<HTMLDivElement>(null);
-  const scrollTimeoutHour = useRef<NodeJS.Timeout | null>(null);
-  const scrollTimeoutMinute = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutHour = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollTimeoutMinute = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (value) {
