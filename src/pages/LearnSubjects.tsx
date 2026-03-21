@@ -25,7 +25,7 @@ import {
 import { Calculator, Atom, BookOpen, Globe, MoreHorizontal, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { CompactTimeSelector } from "@/components/CompactTimeSelector";
+import { TimeDrumPicker } from "@/components/TimeDrumPicker";
 import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -414,7 +414,7 @@ const LearnSubjects = () => {
                   )}>
                     {t("learnSubjects.preferredTime")} <span className="text-rose-500">*</span>
                   </Label>
-                  <CompactTimeSelector
+                  <TimeDrumPicker
                     value={selectedTime}
                     onChange={useCallback((time: string) => {
                       setSelectedTime(time);
