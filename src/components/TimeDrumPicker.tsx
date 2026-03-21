@@ -165,7 +165,7 @@ export const TimeDrumPicker = ({ value, onChange, disabled = false }: TimeDrumPi
     )}>
       {/* Center selection highlight */}
       <div
-        className="absolute left-3 right-3 z-10 pointer-events-none rounded-xl bg-white/60 backdrop-blur-md border border-white/40 shadow-sm"
+        className="absolute left-3 right-3 z-10 pointer-events-none rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-md border border-blue-200/40 shadow-sm"
         style={{ height: ITEM_HEIGHT, top: `calc(50% - ${ITEM_HEIGHT / 2}px)` }}
       />
 
