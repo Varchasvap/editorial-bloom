@@ -98,6 +98,8 @@ const translations: Record<Language, Record<string, any>> = {
       successDescription: "Thank you for booking! You will be notified via email shortly.",
       toastSuccess: "Request Sent! We will email you shortly.",
       toastError: "Error: Connection failed",
+      dbError: "Failed to save booking. Please try again.",
+      emailError: "Booking saved, but confirmation email failed. We'll follow up manually.",
       noAvailableDates: "No available dates at the moment. Please check back later.",
       upload: {
         title: "Upload Questions/Materials (Optional)",
@@ -207,6 +209,8 @@ const translations: Record<Language, Record<string, any>> = {
       successDescription: "ご予約ありがとうございます！まもなくメールでご連絡いたします。",
       toastSuccess: "リクエスト送信完了！まもなくメールでご連絡いたします。",
       toastError: "エラー：接続に失敗しました",
+      dbError: "予約の保存に失敗しました。もう一度お試しください。",
+      emailError: "予約は保存されましたが、確認メールの送信に失敗しました。手動でフォローアップいたします。",
       noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。",
       upload: {
         title: "質問・資料をアップロード（任意）",

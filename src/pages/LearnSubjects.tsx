@@ -508,6 +508,17 @@ const LearnSubjects = () => {
               </div>
             </section>
 
+            {/* Honeypot - hidden from real users, bots will fill it */}
+            <div className="absolute opacity-0 -z-10 h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                type="text"
+                autoComplete="off"
+                {...register("website")}
+              />
+            </div>
+
             {/* Submit Button */}
             <Button
               type="submit"
