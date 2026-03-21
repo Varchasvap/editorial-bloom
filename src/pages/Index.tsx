@@ -36,28 +36,6 @@ const Index = () => {
               href="/learn-subjects"
             />
 
-            {/* Row 2: Fund Girl's Education (Reversed) */}
-            <FeatureRow
-              title={t('features.fundEducation.title')}
-              description={t('features.fundEducation.description')}
-              buttonText={t('features.fundEducation.button')}
-              buttonVariant="ghost"
-              buttonColor="rose"
-              imageUrl="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80"
-              imageAlt="Children in classroom"
-              reversed
-            />
-
-            {/* Row 3: Learn About Japan */}
-            <FeatureRow
-              title={t('features.learnJapan.title')}
-              description={t('features.learnJapan.description')}
-              buttonText={t('features.learnJapan.button')}
-              buttonVariant="ghost"
-              buttonColor="indigo"
-              imageUrl="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&q=80"
-              imageAlt="Traditional Japanese architecture"
-            />
           </div>
         </section>
       </main>
