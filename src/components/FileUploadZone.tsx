@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 
 const MAX_FILES = 3;
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = [
   "application/pdf",
   "application/msword",

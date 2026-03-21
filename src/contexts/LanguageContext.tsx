@@ -102,11 +102,11 @@ const translations: Record<Language, Record<string, any>> = {
       upload: {
         title: "Upload Questions/Materials (Optional)",
         dragDrop: "Drag & drop files here or click to browse",
-        fileTypes: "PDF, Word, Images (max 10MB per file)",
+        fileTypes: "PDF, Word, Images (max 5MB per file)",
         maxFiles: "Maximum 3 files",
         remove: "Remove",
         uploading: "Uploading...",
-        tooLarge: "File too large (max 10MB)",
+        tooLarge: "File too large (max 5MB)",
         typeNotAllowed: "File type not allowed",
         uploadFailed: "Upload failed. Please try again."
       }
@@ -211,11 +211,11 @@ const translations: Record<Language, Record<string, any>> = {
       upload: {
         title: "質問・資料をアップロード（任意）",
         dragDrop: "ファイルをドラッグ&ドロップまたはクリックして選択",
-        fileTypes: "PDF、Word、画像（1ファイル最大10MB）",
+        fileTypes: "PDF、Word、画像（1ファイル最大5MB）",
         maxFiles: "最大3ファイル",
         remove: "削除",
         uploading: "アップロード中...",
-        tooLarge: "ファイルが大きすぎます（最大10MB）",
+        tooLarge: "ファイルが大きすぎます（最大5MB）",
         typeNotAllowed: "このファイル形式は使用できません",
         uploadFailed: "アップロードに失敗しました。もう一度お試しください。"
       }
