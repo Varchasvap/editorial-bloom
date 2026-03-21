@@ -75,7 +75,7 @@ export const TimeDrumPicker = ({ value, onChange, disabled = false }: TimeDrumPi
     ref: React.RefObject<HTMLDivElement>,
     items: string[],
     setter: (val: string) => void,
-    timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>,
+    timeoutRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
     itemHeight: number
   ) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -119,7 +119,7 @@ export const TimeDrumPicker = ({ value, onChange, disabled = false }: TimeDrumPi
     selected: string,
     ref: React.RefObject<HTMLDivElement>,
     setter: (val: string) => void,
-    timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>,
+    timeoutRef: React.MutableRefObject<ReturnType<typeof setTimeout> | null>,
     prefix?: string
   ) => (
     <div className="relative flex-1 md:flex-none">
