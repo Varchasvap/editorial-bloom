@@ -54,6 +54,7 @@ interface FormData {
   flexibleTime: boolean;
   email: string;
   lineOrPhone: string;
+  website: string; // honeypot field
 }
 
 const LearnSubjects = () => {
@@ -116,6 +117,12 @@ const LearnSubjects = () => {
   };
 
   const onSubmit = async (data: FormData) => {
+    // Honeypot check — bots will fill this hidden field
+    if (data.website) {
+      setShowSuccess(true);
+      return;
+    }
+
     if (!validateForm(data)) {
       toast.error(t("learnSubjects.validationError"));
       return;
@@ -133,30 +140,33 @@ const LearnSubjects = () => {
 
     for (const { file } of uploadedFiles) {
       const filePath = `${Date.now()}_${file.name}`;
-      const { error } = await supabase.storage
-        .from("student-materials")
-        .upload(filePath, file);
+      try {
+        const { error } = await supabase.storage
+          .from("student-materials")
+          .upload(filePath, file);
 
-      if (error) {
-        console.error("File upload error:", error);
+        if (error) {
+          console.error("File upload error:", error);
+          toast.error(t("learnSubjects.upload.uploadFailed"));
+          uploadFailed = true;
+          continue;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from("student-materials")
+          .getPublicUrl(filePath);
+
+        fileResults.push({
+          name: file.name,
+          url: urlData.publicUrl,
+          size: file.size,
+          type: file.type,
+        });
+      } catch (err) {
+        console.error("File upload exception:", err);
+        toast.error(t("learnSubjects.upload.uploadFailed"));
         uploadFailed = true;
-        continue;
       }
-
-      const { data: urlData } = supabase.storage
-        .from("student-materials")
-        .getPublicUrl(filePath);
-
-      fileResults.push({
-        name: file.name,
-        url: urlData.publicUrl,
-        size: file.size,
-        type: file.type,
-      });
-    }
-
-    if (uploadFailed && uploadedFiles.length > 0) {
-      toast.error(t("learnSubjects.upload.uploadFailed"));
     }
 
     // Format file list for email
@@ -166,7 +176,9 @@ const LearnSubjects = () => {
     const uploaded_files_list = fileResults.length > 0
       ? "📎 UPLOADED FILES:\nClick the links below to view/download:\n\n" +
         fileResults.map((f, i) => `${i + 1}. ${f.name} (${formatSize(f.size)})\n   👉 ${f.url}`).join("\n\n")
-      : "📎 No files uploaded";
+      : uploadFailed
+        ? "📎 File upload failed — student attempted to upload files but the upload did not succeed."
+        : "📎 No files uploaded";
 
     const templateParams = {
       from_name: data.studentName || "Unknown Name",
@@ -195,10 +207,18 @@ const LearnSubjects = () => {
         uploaded_files: fileResults.length > 0 ? fileResults : null,
       });
 
-      if (dbError) console.error("DB insert error:", dbError);
+      if (dbError) {
+        console.error("DB insert error:", dbError);
+        toast.error(t("learnSubjects.dbError"));
+      }
 
       // Send email
-      await emailjs.send("service_fu37bdk", "template_6uvrdtx", templateParams);
+      try {
+        await emailjs.send("service_fu37bdk", "template_6uvrdtx", templateParams);
+      } catch (emailErr) {
+        console.error("EmailJS error:", emailErr);
+        toast.error(t("learnSubjects.emailError"));
+      }
 
       toast.success(t("learnSubjects.toastSuccess"));
       reset();
