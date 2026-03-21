@@ -15,7 +15,7 @@ interface FeatureRowProps {
 }
 
 const buttonColorClasses = {
-  slate: "text-blue-600 hover:text-blue-700 hover:bg-blue-50",
+  slate: "bg-gradient-to-r from-rose-100/80 to-pink-100/80 text-slate-800 border border-rose-200/50 shadow-sm hover:shadow-md hover:from-rose-200/90 hover:to-pink-200/90 hover:scale-[1.03] backdrop-blur-sm",
   rose: "text-rose-600 hover:text-rose-700 hover:bg-rose-50",
   indigo: "text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50",
 };
@@ -31,11 +31,15 @@ export function FeatureRow({
   reversed = false,
   href,
 }: FeatureRowProps) {
+  const isProminent = buttonColor === "slate";
   const ButtonContent = (
     <Button
-      variant={buttonVariant}
+      variant={isProminent ? "default" : buttonVariant}
       className={cn(
-        "text-base font-medium px-0 hover:px-4 transition-all",
+        "text-base font-medium transition-all duration-300",
+        isProminent
+          ? "px-6 py-2.5 rounded-full"
+          : "px-0 hover:px-4",
         buttonColorClasses[buttonColor]
       )}
     >

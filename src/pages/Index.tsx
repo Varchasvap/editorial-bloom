@@ -13,7 +13,7 @@ const Index = () => {
       <main className="relative z-10 flex-1">
         {/* Hero Section */}
         <section className="min-h-[50vh] flex flex-col items-center justify-center px-6 pt-20 pb-12">
-          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 text-center tracking-tight leading-tight">
+          <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 text-center tracking-tight leading-tight max-w-[calc(100vw-6rem)]">
             {t('hero.title')}
           </h1>
           <p className="mt-6 font-body text-lg md:text-xl text-slate-700 text-center max-w-2xl leading-relaxed">
