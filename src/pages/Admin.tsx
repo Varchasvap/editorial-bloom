@@ -29,21 +29,20 @@ const Admin = () => {
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
 
-  // Auth state listener
+  // Auth state listener — restore session first, then listen for changes
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
