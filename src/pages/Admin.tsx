@@ -29,21 +29,20 @@ const Admin = () => {
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
 
-  // Auth state listener
+  // Auth state listener — restore session first, then listen for changes
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
@@ -101,7 +100,7 @@ const Admin = () => {
   };
 
   const handleDateClick = async (date: Date | undefined) => {
-    if (!date) return;
+    if (!date || !user) return;
 
     const dateString = date.toISOString().split("T")[0];
     const isCurrentlyAvailable = availableDates.some(
@@ -111,7 +110,6 @@ const Admin = () => {
     setCalendarLoading(true);
     try {
       if (isCurrentlyAvailable) {
-        // Remove the date
         const { error } = await supabase
           .from("availability")
           .delete()
@@ -124,7 +122,6 @@ const Admin = () => {
         );
         toast.success(t("admin.dateRemoved"));
       } else {
-        // Add the date
         const { error } = await supabase
           .from("availability")
           .insert({ date: dateString, is_available: true });
@@ -136,7 +133,7 @@ const Admin = () => {
       }
     } catch (error: any) {
       console.error("Error updating availability:", error);
-      toast.error(t("admin.updateError"));
+      toast.error(t("admin.updateError") + ": " + (error.message || "Unknown error"));
     } finally {
       setCalendarLoading(false);
     }
