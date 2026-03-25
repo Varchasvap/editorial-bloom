@@ -29,6 +29,13 @@ const Admin = () => {
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
 
+  const toLocalDateString = (value: Date) => {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   // Auth state listener — restore session first, then listen for changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -64,7 +71,10 @@ const Admin = () => {
 
       if (error) throw error;
 
-      const dates = (data as AvailabilityRecord[]).map((record) => new Date(record.date + "T00:00:00"));
+      const dates = (data as AvailabilityRecord[]).map((record) => {
+        const [year, month, day] = record.date.split("-").map(Number);
+        return new Date(year, month - 1, day);
+      });
       setAvailableDates(dates);
     } catch (error: any) {
       console.error("Error fetching availability:", error);
@@ -100,35 +110,43 @@ const Admin = () => {
   };
 
   const handleDateClick = async (date: Date | undefined) => {
-    if (!date || !user) return;
+    if (!date || !user || !session) return;
 
-    const dateString = date.toISOString().split("T")[0];
+    const selectedDate = toLocalDateString(date);
     const isCurrentlyAvailable = availableDates.some(
-      (d) => d.toISOString().split("T")[0] === dateString
+      (d) => toLocalDateString(d) === selectedDate
     );
 
     setCalendarLoading(true);
     try {
       if (isCurrentlyAvailable) {
-        const { error } = await supabase
+        const { data: deletedRows, error } = await supabase
           .from("availability")
           .delete()
-          .eq("date", dateString);
+          .eq("date", selectedDate)
+          .select("id");
 
         if (error) throw error;
+        if (!deletedRows || deletedRows.length === 0) {
+          toast.error("Delete failed: no matching availability row found.");
+          await fetchAvailability();
+          return;
+        }
 
-        setAvailableDates((prev) =>
-          prev.filter((d) => d.toISOString().split("T")[0] !== dateString)
-        );
+        await fetchAvailability();
         toast.success(t("admin.dateRemoved"));
       } else {
-        const { error } = await supabase
+        const { data: insertedRows, error } = await supabase
           .from("availability")
-          .insert({ date: dateString, is_available: true });
+          .insert({ date: selectedDate, is_available: true })
+          .select("id");
 
         if (error) throw error;
+        if (!insertedRows || insertedRows.length === 0) {
+          throw new Error("Insert failed: database did not confirm the row.");
+        }
 
-        setAvailableDates((prev) => [...prev, date]);
+        await fetchAvailability();
         toast.success(t("admin.dateAdded"));
       }
     } catch (error: any) {
