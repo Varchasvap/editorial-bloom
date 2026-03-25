@@ -100,7 +100,7 @@ const Admin = () => {
   };
 
   const handleDateClick = async (date: Date | undefined) => {
-    if (!date) return;
+    if (!date || !user) return;
 
     const dateString = date.toISOString().split("T")[0];
     const isCurrentlyAvailable = availableDates.some(
@@ -110,7 +110,6 @@ const Admin = () => {
     setCalendarLoading(true);
     try {
       if (isCurrentlyAvailable) {
-        // Remove the date
         const { error } = await supabase
           .from("availability")
           .delete()
@@ -123,7 +122,6 @@ const Admin = () => {
         );
         toast.success(t("admin.dateRemoved"));
       } else {
-        // Add the date
         const { error } = await supabase
           .from("availability")
           .insert({ date: dateString, is_available: true });
@@ -135,7 +133,7 @@ const Admin = () => {
       }
     } catch (error: any) {
       console.error("Error updating availability:", error);
-      toast.error(t("admin.updateError"));
+      toast.error(t("admin.updateError") + ": " + (error.message || "Unknown error"));
     } finally {
       setCalendarLoading(false);
     }
