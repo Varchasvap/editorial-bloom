@@ -95,7 +95,7 @@ const translations: Record<Language, Record<string, any>> = {
       submitting: "Sending...",
       validationError: "Please fill in all required fields.",
       successTitle: "Thank You!",
-      successDescription: "Thank you for booking! You will be notified via email shortly.",
+      successDescription: "Thank you for booking! We will inform you about meeting details within 12 hours.",
       toastSuccess: "Request Sent! We will email you shortly.",
       toastError: "Error: Connection failed",
       dbError: "Failed to save booking. Please try again.",
