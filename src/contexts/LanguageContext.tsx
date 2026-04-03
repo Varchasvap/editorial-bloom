@@ -206,7 +206,7 @@ const translations: Record<Language, Record<string, any>> = {
       submitting: "送信中...",
       validationError: "必須項目をすべて入力してください。",
       successTitle: "ありがとうございます！",
-      successDescription: "ご予約ありがとうございます！まもなくメールでご連絡いたします。",
+      successDescription: "ご予約ありがとうございます。12時間以内にミーティングの詳細をご連絡いたします。",
       toastSuccess: "リクエスト送信完了！まもなくメールでご連絡いたします。",
       toastError: "エラー：接続に失敗しました",
       dbError: "予約の保存に失敗しました。もう一度お試しください。",
