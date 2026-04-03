@@ -377,7 +377,8 @@ const LearnSubjects = () => {
             {/* Section 3: Time Preferences */}
             <section className="space-y-5">
               <h2 className="font-display text-lg text-slate-800 border-b border-slate-200 pb-2">
-                {t("learnSubjects.timePreferences")}
+                {t("learnSubjects.timePreferences")}{" "}
+                <span className="text-sm text-muted-foreground font-normal">{t("learnSubjects.timeDuration")}</span>
               </h2>
 
               <div className="space-y-4">
