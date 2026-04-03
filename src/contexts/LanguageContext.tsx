@@ -82,6 +82,7 @@ const translations: Record<Language, Record<string, any>> = {
       topic: "Topic",
       topicPlaceholder: "What do you want to learn today?",
       timePreferences: "Time Preferences",
+      timeDuration: "(Total duration of the lesson will be 45 minutes)",
       preferredDate: "Preferred Date",
       preferredTime: "Preferred Start Time",
       flexibleTime: "I am flexible (Open to rescheduling)",
