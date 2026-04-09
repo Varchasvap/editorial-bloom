@@ -102,6 +102,7 @@ const translations: Record<Language, Record<string, any>> = {
       dbError: "Failed to save booking. Please try again.",
       emailError: "Booking saved, but confirmation email failed. We'll follow up manually.",
       noAvailableDates: "No available dates at the moment. Please check back later.",
+      leadTimeNotice: "Notice: To allow for proper preparation, bookings must be made at least 7 days in advance.",
       upload: {
         title: "Upload Questions/Materials (Optional)",
         dragDrop: "Drag & drop files here or click to browse",
@@ -214,6 +215,7 @@ const translations: Record<Language, Record<string, any>> = {
       dbError: "予約の保存に失敗しました。もう一度お試しください。",
       emailError: "予約は保存されましたが、確認メールの送信に失敗しました。手動でフォローアップいたします。",
       noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。",
+      leadTimeNotice: "【重要】 授業準備のため、ご予約は希望日の7日前までにお願いしております。",
       upload: {
         title: "質問・資料をアップロード（任意）",
         dragDrop: "ファイルをドラッグ&ドロップまたはクリックして選択",
