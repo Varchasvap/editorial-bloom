@@ -381,19 +381,16 @@ const LearnSubjects = () => {
                 <span className="text-sm text-muted-foreground font-normal">{t("learnSubjects.timeDuration")}</span>
               </h2>
 
-              <div className="space-y-4">
-                <div>
-                  <Label className={cn(
-                    "font-body text-slate-700 mb-3 block",
-                    validationErrors.date && "text-rose-600"
-                  )}>
-                   {t("learnSubjects.preferredDate")} <span className="text-rose-500">*</span>
-                  </Label>
-                  <div className="mb-3 rounded-xl border border-slate-200/80 bg-slate-50/80 backdrop-blur-sm px-4 py-3">
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                      📌 {t("learnSubjects.leadTimeNotice")}
-                    </p>
-                  </div>
+              <div className="flex flex-col items-center gap-6">
+                {/* Lead-time notice */}
+                <div className="w-full rounded-xl border border-slate-200/80 bg-slate-50/80 backdrop-blur-sm px-4 py-3">
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    📌 {t("learnSubjects.leadTimeNotice")}
+                  </p>
+                </div>
+
+                {/* Date selector */}
+                <div className="w-full">
                   {loadingAvailability ? (
                     <div className="w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-400 backdrop-blur-sm animate-pulse">
                       Loading available dates...
@@ -415,7 +412,7 @@ const LearnSubjects = () => {
                         !selectedDate && "text-slate-400"
                       )}
                     >
-                      <option value="" disabled>Select an available date</option>
+                      <option value="" disabled>{t("learnSubjects.preferredDate")}</option>
                       {availableDates
                         .filter((date) => {
                           const d = new Date(date + "T00:00:00");
@@ -439,23 +436,17 @@ const LearnSubjects = () => {
                   )}
                 </div>
 
-                <div>
-                  <Label className={cn(
-                    "font-body text-slate-700 mb-3 block",
-                    validationErrors.time && "text-rose-600"
-                  )}>
-                    {t("learnSubjects.preferredTime")} <span className="text-rose-500">*</span>
-                  </Label>
-                  <TimeDrumPicker
-                    value={selectedTime}
-                    onChange={useCallback((time: string) => {
-                      setSelectedTime(time);
-                      setValidationErrors(prev => ({ ...prev, time: false }));
-                    }, [])}
-                  />
-                </div>
+                {/* Time drum picker */}
+                <TimeDrumPicker
+                  value={selectedTime}
+                  onChange={useCallback((time: string) => {
+                    setSelectedTime(time);
+                    setValidationErrors(prev => ({ ...prev, time: false }));
+                  }, [])}
+                />
 
-                <div className="flex items-center space-x-3">
+                {/* Flexible checkbox */}
+                <div className="flex items-center space-x-3 self-start">
                   <Checkbox
                     id="flexibleTime"
                     checked={flexibleTime}
