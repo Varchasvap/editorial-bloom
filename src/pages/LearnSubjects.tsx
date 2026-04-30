@@ -67,25 +67,43 @@ const LearnSubjects = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
-  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState<SelectedFile[]>([]);
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>();
 
-  // Fetch available dates from database
+  // Compute the booking window: [today+7, today+37]
+  const { minDate, maxDate } = useMemo(() => {
+    const min = new Date();
+    min.setHours(0, 0, 0, 0);
+    min.setDate(min.getDate() + 7);
+    const max = new Date();
+    max.setHours(0, 0, 0, 0);
+    max.setDate(max.getDate() + 37);
+    return { minDate: min, maxDate: max };
+  }, []);
+
+  const toLocalDateString = (value: Date) => {
+    const y = value.getFullYear();
+    const m = String(value.getMonth() + 1).padStart(2, "0");
+    const d = String(value.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  // Fetch blocked dates from database (is_available = false)
   useEffect(() => {
     const fetchAvailability = async () => {
       try {
         const { data, error } = await supabase
           .from("availability")
-          .select("date")
-          .eq("is_available", true);
+          .select("date, is_available")
+          .eq("is_available", false);
 
         if (error) throw error;
 
         const dates = data?.map((record) => record.date) || [];
-        setAvailableDates(dates);
+        setBlockedDates(dates);
       } catch (error) {
         console.error("Error fetching availability:", error);
       } finally {
@@ -95,6 +113,15 @@ const LearnSubjects = () => {
 
     fetchAvailability();
   }, []);
+
+  const blockedDateObjects = useMemo(
+    () =>
+      blockedDates.map((d) => {
+        const [y, m, day] = d.split("-").map(Number);
+        return new Date(y, m - 1, day);
+      }),
+    [blockedDates]
+  );
 
   const subjects = [
     { id: "math", label: t("learnSubjects.subjects.math"), icon: subjectIcons.math },
