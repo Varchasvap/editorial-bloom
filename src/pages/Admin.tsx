@@ -26,8 +26,18 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
-  const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  const [blockedDates, setBlockedDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
+
+  const { minDate, maxDate } = (() => {
+    const min = new Date();
+    min.setHours(0, 0, 0, 0);
+    min.setDate(min.getDate() + 7);
+    const max = new Date();
+    max.setHours(0, 0, 0, 0);
+    max.setDate(max.getDate() + 37);
+    return { minDate: min, maxDate: max };
+  })();
 
   const toLocalDateString = (value: Date) => {
     const year = value.getFullYear();
@@ -67,7 +77,7 @@ const Admin = () => {
       const { data, error } = await supabase
         .from("availability")
         .select("*")
-        .eq("is_available", true);
+        .eq("is_available", false);
 
       if (error) throw error;
 
@@ -75,7 +85,7 @@ const Admin = () => {
         const [year, month, day] = record.date.split("-").map(Number);
         return new Date(year, month - 1, day);
       });
-      setAvailableDates(dates);
+      setBlockedDates(dates);
     } catch (error: any) {
       console.error("Error fetching availability:", error);
       toast.error(t("admin.fetchError"));
@@ -113,32 +123,30 @@ const Admin = () => {
     if (!date || !user || !session) return;
 
     const selectedDate = toLocalDateString(date);
-    const isCurrentlyAvailable = availableDates.some(
+    const isCurrentlyBlocked = blockedDates.some(
       (d) => toLocalDateString(d) === selectedDate
     );
 
     setCalendarLoading(true);
     try {
-      if (isCurrentlyAvailable) {
-        const { data: deletedRows, error } = await supabase
+      if (isCurrentlyBlocked) {
+        // Unblock — delete the row
+        const { error } = await supabase
           .from("availability")
           .delete()
-          .eq("date", selectedDate)
-          .select("id");
+          .eq("date", selectedDate);
 
         if (error) throw error;
-        if (!deletedRows || deletedRows.length === 0) {
-          toast.error("Delete failed: no matching availability row found.");
-          await fetchAvailability();
-          return;
-        }
 
         await fetchAvailability();
-        toast.success(t("admin.dateRemoved"));
+        toast.success(t("admin.dateUnblocked"));
       } else {
+        // Block — clean any prior row, then insert is_available: false
+        await supabase.from("availability").delete().eq("date", selectedDate);
+
         const { data: insertedRows, error } = await supabase
           .from("availability")
-          .insert({ date: selectedDate, is_available: true })
+          .insert({ date: selectedDate, is_available: false })
           .select("id");
 
         if (error) throw error;
@@ -147,7 +155,7 @@ const Admin = () => {
         }
 
         await fetchAvailability();
-        toast.success(t("admin.dateAdded"));
+        toast.success(t("admin.dateBlocked"));
       }
     } catch (error: any) {
       console.error("Error updating availability:", error);
@@ -283,11 +291,11 @@ const Admin = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center shadow-md">
-                <span className="text-slate-400 text-lg">⚪</span>
+              <div className="w-10 h-10 rounded-lg bg-rose-500 flex items-center justify-center shadow-md">
+                <span className="text-white text-lg">🚫</span>
               </div>
               <div>
-                <p className="font-display text-sm font-semibold text-slate-700">{t("admin.legendBlocked")}</p>
+                <p className="font-display text-sm font-semibold text-rose-700">{t("admin.legendBlocked")}</p>
                 <p className="font-body text-xs text-slate-500">{t("admin.legendBlockedDesc")}</p>
               </div>
             </div>
@@ -296,7 +304,9 @@ const Admin = () => {
           {/* Stats */}
           <div className="text-center mb-6">
             <p className="font-body text-sm text-slate-600">
-              {t("admin.totalAvailable")}: <span className="font-semibold text-emerald-600">{availableDates.length}</span> {t("admin.days")}
+              {t("admin.totalBlocked")}: <span className="font-semibold text-rose-600">{blockedDates.length}</span> {t("admin.days")}
+              <span className="mx-2 text-slate-400">·</span>
+              {t("admin.windowRange")}
             </p>
           </div>
 
@@ -305,22 +315,22 @@ const Admin = () => {
             <Calendar
               mode="single"
               onSelect={handleDateClick}
-              disabled={calendarLoading}
+              fromDate={minDate}
+              toDate={maxDate}
               className={cn(
-                "p-4 pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-lg",
-                calendarLoading && "opacity-50"
+                "p-4 pointer-events-auto bg-white rounded-3xl border border-slate-200 shadow-lg",
+                calendarLoading && "opacity-50 pointer-events-none"
               )}
               modifiers={{
-                available: availableDates,
+                blocked: blockedDates,
               }}
-              modifiersStyles={{
-                available: {
-                  backgroundColor: "rgb(16, 185, 129)",
-                  color: "white",
-                  fontWeight: "bold",
-                },
+              modifiersClassNames={{
+                blocked: "bg-rose-500 text-white hover:bg-rose-600 rounded-full",
               }}
-              fromDate={new Date()}
+              classNames={{
+                day: "h-9 w-9 p-0 font-normal rounded-full hover:bg-emerald-100 hover:text-emerald-700 transition-colors aria-selected:opacity-100",
+                day_today: "bg-slate-100 text-slate-900 rounded-full font-semibold",
+              }}
             />
           </div>
 

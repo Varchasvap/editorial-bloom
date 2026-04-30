@@ -102,7 +102,8 @@ const translations: Record<Language, Record<string, any>> = {
       dbError: "Failed to save booking. Please try again.",
       emailError: "Booking saved, but confirmation email failed. We'll follow up manually.",
       noAvailableDates: "No available dates at the moment. Please check back later.",
-      leadTimeNotice: "Notice: To allow for proper preparation, bookings must be made at least 7 days in advance.",
+      calendarLoading: "Loading calendar...",
+      leadTimeNotice: "Notice: Bookings open from 7 days out and up to 30 days ahead. Greyed-out dates are unavailable.",
       upload: {
         title: "Upload Questions/Materials (Optional)",
         dragDrop: "Drag & drop files here or click to browse",
@@ -138,16 +139,20 @@ const translations: Record<Language, Record<string, any>> = {
       dashboardTitle: "Availability Manager",
       dashboardSubtitle: "Click dates to toggle availability for students",
       legendAvailable: "Available",
-      legendAvailableDesc: "Students can book this date",
-      legendBlocked: "Busy / Blocked",
-      legendBlockedDesc: "Not available for booking",
+      legendAvailableDesc: "Open for booking by default",
+      legendBlocked: "Blocked",
+      legendBlockedDesc: "Click a date to block / unblock",
       totalAvailable: "Total available",
+      totalBlocked: "Total blocked",
+      windowRange: "Showing the next 30-day booking window",
       days: "days",
+      dateBlocked: "Date blocked successfully",
+      dateUnblocked: "Date unblocked — open for booking",
       dateAdded: "Date marked as available!",
       dateRemoved: "Date removed from availability",
       fetchError: "Failed to load availability",
       updateError: "Failed to update availability",
-      instructions: "Click a date to make it available (green). Click again to remove it."
+      instructions: "Click any date in the next 30 days to block it (red). Click a blocked date to reopen it."
     },
     footer: {
       adminLogin: "Admin Login"
@@ -215,7 +220,8 @@ const translations: Record<Language, Record<string, any>> = {
       dbError: "予約の保存に失敗しました。もう一度お試しください。",
       emailError: "予約は保存されましたが、確認メールの送信に失敗しました。手動でフォローアップいたします。",
       noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。",
-      leadTimeNotice: "【重要】 授業準備のため、ご予約は希望日の7日前までにお願いしております。",
+      calendarLoading: "カレンダーを読み込み中...",
+      leadTimeNotice: "【ご案内】 ご予約は本日から7日後〜30日後の期間でお受けしております。グレーアウトされた日付はご予約いただけません。",
       upload: {
         title: "質問・資料をアップロード（任意）",
         dragDrop: "ファイルをドラッグ&ドロップまたはクリックして選択",
@@ -251,16 +257,20 @@ const translations: Record<Language, Record<string, any>> = {
       dashboardTitle: "予約可能日管理",
       dashboardSubtitle: "日付をクリックして生徒への公開状態を切り替えます",
       legendAvailable: "予約可能",
-      legendAvailableDesc: "生徒が予約できます",
-      legendBlocked: "予定あり / ブロック",
-      legendBlockedDesc: "予約不可",
+      legendAvailableDesc: "デフォルトで予約可能です",
+      legendBlocked: "ブロック済み",
+      legendBlockedDesc: "日付をクリックしてブロック / 解除",
       totalAvailable: "予約可能日数",
+      totalBlocked: "ブロック中の日数",
+      windowRange: "今後30日間の予約ウィンドウを表示中",
       days: "日",
+      dateBlocked: "日付をブロックしました",
+      dateUnblocked: "ブロックを解除しました — 予約可能になりました",
       dateAdded: "予約可能日として追加しました！",
       dateRemoved: "予約可能日から削除しました",
       fetchError: "予約可能日の読み込みに失敗しました",
       updateError: "予約可能日の更新に失敗しました",
-      instructions: "日付をクリックして予約可能（緑）にします。もう一度クリックで削除します。"
+      instructions: "今後30日間の日付をクリックしてブロック（赤）にします。ブロック済みの日付をクリックすると解除されます。"
     },
     footer: {
       adminLogin: "管理者ログイン"
