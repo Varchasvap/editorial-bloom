@@ -417,50 +417,61 @@ const LearnSubjects = () => {
                   </p>
                 </div>
 
-                {/* Date selector */}
-                <div className="w-full">
+                {/* Date selector — Sakura Calendar */}
+                <div className="w-full flex flex-col items-center">
                   {loadingAvailability ? (
-                    <div className="w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-400 backdrop-blur-sm animate-pulse">
-                      Loading available dates...
-                    </div>
-                  ) : availableDates.length === 0 ? (
-                    <div className="w-full bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-700">
-                      {t("learnSubjects.noAvailableDates")}
+                    <div className="w-full bg-white/50 border border-white/60 rounded-2xl p-6 text-slate-400 backdrop-blur-sm animate-pulse text-center">
+                      {t("learnSubjects.calendarLoading")}
                     </div>
                   ) : (
-                    <select
-                      value={selectedDate}
-                      onChange={(e) => {
-                        setSelectedDate(e.target.value);
-                        setValidationErrors(prev => ({ ...prev, date: false }));
-                      }}
-                      className={cn(
-                        "w-full bg-white/50 border border-white/60 rounded-lg p-3 text-slate-700 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:outline-none",
-                        validationErrors.date && "border-rose-500 ring-1 ring-rose-500",
-                        !selectedDate && "text-slate-400"
-                      )}
-                    >
-                      <option value="" disabled>{t("learnSubjects.preferredDate")}</option>
-                      {availableDates
-                        .filter((date) => {
-                          const d = new Date(date + "T00:00:00");
-                          const minDate = new Date();
-                          minDate.setDate(minDate.getDate() + 7);
-                          minDate.setHours(0, 0, 0, 0);
-                          return d >= minDate;
-                        })
-                        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-                        .map((date) => (
-                          <option key={date} value={date}>
-                            {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+                    <>
+                      <div
+                        className={cn(
+                          "rounded-3xl border border-white/60 bg-white/60 backdrop-blur-xl shadow-lg p-2 sm:p-3",
+                          validationErrors.date && "ring-2 ring-rose-400"
+                        )}
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate ? (() => {
+                            const [y, m, d] = selectedDate.split("-").map(Number);
+                            return new Date(y, m - 1, d);
+                          })() : undefined}
+                          onSelect={(date) => {
+                            if (!date) return;
+                            setSelectedDate(toLocalDateString(date));
+                            setValidationErrors((prev) => ({ ...prev, date: false }));
+                          }}
+                          fromDate={minDate}
+                          toDate={maxDate}
+                          disabled={blockedDateObjects}
+                          modifiers={{ blocked: blockedDateObjects }}
+                          modifiersClassNames={{
+                            blocked: "line-through opacity-40",
+                          }}
+                          className="p-3 pointer-events-auto rounded-2xl"
+                          classNames={{
+                            day_selected:
+                              "bg-pink-500 text-white hover:bg-pink-500 hover:text-white focus:bg-pink-500 focus:text-white rounded-full",
+                            day_today: "bg-slate-100 text-slate-900 rounded-full",
+                            day: "h-9 w-9 p-0 font-normal rounded-full hover:bg-pink-100 hover:text-pink-700 transition-colors aria-selected:opacity-100",
+                          }}
+                        />
+                      </div>
+                      {selectedDate && (
+                        <p className="mt-3 text-sm text-slate-700 font-body">
+                          <span className="text-slate-500">{t("learnSubjects.preferredDate")}: </span>
+                          <span className="font-medium">
+                            {new Date(selectedDate + "T00:00:00").toLocaleDateString(undefined, {
                               weekday: "long",
                               year: "numeric",
                               month: "long",
                               day: "numeric",
                             })}
-                          </option>
-                        ))}
-                    </select>
+                          </span>
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 
