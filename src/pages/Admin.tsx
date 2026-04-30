@@ -77,7 +77,7 @@ const Admin = () => {
       const { data, error } = await supabase
         .from("availability")
         .select("*")
-        .eq("is_available", true);
+        .eq("is_available", false);
 
       if (error) throw error;
 
@@ -85,7 +85,7 @@ const Admin = () => {
         const [year, month, day] = record.date.split("-").map(Number);
         return new Date(year, month - 1, day);
       });
-      setAvailableDates(dates);
+      setBlockedDates(dates);
     } catch (error: any) {
       console.error("Error fetching availability:", error);
       toast.error(t("admin.fetchError"));
