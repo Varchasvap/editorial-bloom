@@ -145,16 +145,14 @@ const translations: Record<Language, Record<string, any>> = {
       totalAvailable: "Total available",
       totalBlocked: "Total blocked",
       windowRange: "Showing the next 30-day booking window",
-      legendAvailableDesc: "Students can book this date",
-      legendBlocked: "Busy / Blocked",
-      legendBlockedDesc: "Not available for booking",
-      totalAvailable: "Total available",
       days: "days",
+      dateBlocked: "Date blocked successfully",
+      dateUnblocked: "Date unblocked — open for booking",
       dateAdded: "Date marked as available!",
       dateRemoved: "Date removed from availability",
       fetchError: "Failed to load availability",
       updateError: "Failed to update availability",
-      instructions: "Click a date to make it available (green). Click again to remove it."
+      instructions: "Click any date in the next 30 days to block it (red). Click a blocked date to reopen it."
     },
     footer: {
       adminLogin: "Admin Login"
