@@ -26,8 +26,18 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
-  const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  const [blockedDates, setBlockedDates] = useState<Date[]>([]);
   const [calendarLoading, setCalendarLoading] = useState(false);
+
+  const { minDate, maxDate } = (() => {
+    const min = new Date();
+    min.setHours(0, 0, 0, 0);
+    min.setDate(min.getDate() + 7);
+    const max = new Date();
+    max.setHours(0, 0, 0, 0);
+    max.setDate(max.getDate() + 37);
+    return { minDate: min, maxDate: max };
+  })();
 
   const toLocalDateString = (value: Date) => {
     const year = value.getFullYear();
