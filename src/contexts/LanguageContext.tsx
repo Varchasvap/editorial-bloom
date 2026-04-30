@@ -220,7 +220,8 @@ const translations: Record<Language, Record<string, any>> = {
       dbError: "予約の保存に失敗しました。もう一度お試しください。",
       emailError: "予約は保存されましたが、確認メールの送信に失敗しました。手動でフォローアップいたします。",
       noAvailableDates: "現在予約可能な日程がありません。後日ご確認ください。",
-      leadTimeNotice: "【重要】 授業準備のため、ご予約は希望日の7日前までにお願いしております。",
+      calendarLoading: "カレンダーを読み込み中...",
+      leadTimeNotice: "【ご案内】 ご予約は本日から7日後〜30日後の期間でお受けしております。グレーアウトされた日付はご予約いただけません。",
       upload: {
         title: "質問・資料をアップロード（任意）",
         dragDrop: "ファイルをドラッグ&ドロップまたはクリックして選択",
