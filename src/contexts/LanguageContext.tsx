@@ -257,16 +257,20 @@ const translations: Record<Language, Record<string, any>> = {
       dashboardTitle: "予約可能日管理",
       dashboardSubtitle: "日付をクリックして生徒への公開状態を切り替えます",
       legendAvailable: "予約可能",
-      legendAvailableDesc: "生徒が予約できます",
-      legendBlocked: "予定あり / ブロック",
-      legendBlockedDesc: "予約不可",
+      legendAvailableDesc: "デフォルトで予約可能です",
+      legendBlocked: "ブロック済み",
+      legendBlockedDesc: "日付をクリックしてブロック / 解除",
       totalAvailable: "予約可能日数",
+      totalBlocked: "ブロック中の日数",
+      windowRange: "今後30日間の予約ウィンドウを表示中",
       days: "日",
+      dateBlocked: "日付をブロックしました",
+      dateUnblocked: "ブロックを解除しました — 予約可能になりました",
       dateAdded: "予約可能日として追加しました！",
       dateRemoved: "予約可能日から削除しました",
       fetchError: "予約可能日の読み込みに失敗しました",
       updateError: "予約可能日の更新に失敗しました",
-      instructions: "日付をクリックして予約可能（緑）にします。もう一度クリックで削除します。"
+      instructions: "今後30日間の日付をクリックしてブロック（赤）にします。ブロック済みの日付をクリックすると解除されます。"
     },
     footer: {
       adminLogin: "管理者ログイン"
