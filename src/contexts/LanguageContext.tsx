@@ -102,7 +102,8 @@ const translations: Record<Language, Record<string, any>> = {
       dbError: "Failed to save booking. Please try again.",
       emailError: "Booking saved, but confirmation email failed. We'll follow up manually.",
       noAvailableDates: "No available dates at the moment. Please check back later.",
-      leadTimeNotice: "Notice: To allow for proper preparation, bookings must be made at least 7 days in advance.",
+      calendarLoading: "Loading calendar...",
+      leadTimeNotice: "Notice: Bookings open from 7 days out and up to 30 days ahead. Greyed-out dates are unavailable.",
       upload: {
         title: "Upload Questions/Materials (Optional)",
         dragDrop: "Drag & drop files here or click to browse",
