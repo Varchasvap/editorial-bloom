@@ -123,32 +123,30 @@ const Admin = () => {
     if (!date || !user || !session) return;
 
     const selectedDate = toLocalDateString(date);
-    const isCurrentlyAvailable = availableDates.some(
+    const isCurrentlyBlocked = blockedDates.some(
       (d) => toLocalDateString(d) === selectedDate
     );
 
     setCalendarLoading(true);
     try {
-      if (isCurrentlyAvailable) {
-        const { data: deletedRows, error } = await supabase
+      if (isCurrentlyBlocked) {
+        // Unblock — delete the row
+        const { error } = await supabase
           .from("availability")
           .delete()
-          .eq("date", selectedDate)
-          .select("id");
+          .eq("date", selectedDate);
 
         if (error) throw error;
-        if (!deletedRows || deletedRows.length === 0) {
-          toast.error("Delete failed: no matching availability row found.");
-          await fetchAvailability();
-          return;
-        }
 
         await fetchAvailability();
-        toast.success(t("admin.dateRemoved"));
+        toast.success(t("admin.dateUnblocked"));
       } else {
+        // Block — clean any prior row, then insert is_available: false
+        await supabase.from("availability").delete().eq("date", selectedDate);
+
         const { data: insertedRows, error } = await supabase
           .from("availability")
-          .insert({ date: selectedDate, is_available: true })
+          .insert({ date: selectedDate, is_available: false })
           .select("id");
 
         if (error) throw error;
@@ -157,7 +155,7 @@ const Admin = () => {
         }
 
         await fetchAvailability();
-        toast.success(t("admin.dateAdded"));
+        toast.success(t("admin.dateBlocked"));
       }
     } catch (error: any) {
       console.error("Error updating availability:", error);
