@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
-import emailjs from "@emailjs/browser";
 import { supabase } from "@/integrations/supabase/client";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { Button } from "@/components/ui/button";
@@ -31,9 +30,6 @@ import { Footer } from "@/components/Footer";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { FileUploadZone, type SelectedFile } from "@/components/FileUploadZone";
-
-// Initialize EmailJS
-emailjs.init("pB-Ip7Hzn8CkafusZ");
 
 const subjectIcons = {
   math: Calculator,
@@ -157,95 +153,34 @@ const LearnSubjects = () => {
     }
 
     setIsSubmitting(true);
-    
-    const subjectLabel = subjects.find(s => s.id === selectedSubject)?.label || selectedSubject;
-    const dateString = selectedDate ? new Date(selectedDate).toLocaleDateString() : "No Date Selected";
-    const flexibilityNote = flexibleTime ? "Yes - Open to rescheduling" : "No - Fixed time only";
-
-    // Upload files to storage
-    const fileResults: { name: string; url: string; size: number; type: string }[] = [];
-    let uploadFailed = false;
-
-    for (const { file } of uploadedFiles) {
-      const filePath = `${Date.now()}_${file.name}`;
-      try {
-        const { error } = await supabase.storage
-          .from("student-materials")
-          .upload(filePath, file);
-
-        if (error) {
-          console.error("File upload error:", error);
-          toast.error(t("learnSubjects.upload.uploadFailed"));
-          uploadFailed = true;
-          continue;
-        }
-
-        const { data: urlData } = supabase.storage
-          .from("student-materials")
-          .getPublicUrl(filePath);
-
-        fileResults.push({
-          name: file.name,
-          url: urlData.publicUrl,
-          size: file.size,
-          type: file.type,
-        });
-      } catch (err) {
-        console.error("File upload exception:", err);
-        toast.error(t("learnSubjects.upload.uploadFailed"));
-        uploadFailed = true;
-      }
-    }
-
-    // Format file list for email
-    const formatSize = (bytes: number) =>
-      bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-
-    const uploaded_files_list = fileResults.length > 0
-      ? "📎 UPLOADED FILES:\nClick the links below to view/download:\n\n" +
-        fileResults.map((f, i) => `${i + 1}. ${f.name} (${formatSize(f.size)})\n   👉 ${f.url}`).join("\n\n")
-      : uploadFailed
-        ? "📎 File upload failed — student attempted to upload files but the upload did not succeed."
-        : "📎 No files uploaded";
-
-    const templateParams = {
-      from_name: data.studentName || "Unknown Name",
-      age: data.age || "Not specified",
-      subject: subjectLabel || "General",
-      topic: data.topic || "No topic",
-      time_slot: selectedTime || "No specific time picked",
-      date: dateString,
-      contact_email: data.email || "no-email@test.com",
-      is_flexible: flexibilityNote,
-      uploaded_files_list,
-    };
 
     try {
-      // Save to database
-      const { error: dbError } = await supabase.from("bookings").insert({
-        student_name: data.studentName,
-        student_email: data.email,
+      // Build multipart form for the secure edge function.
+      const form = new FormData();
+      form.append("payload", JSON.stringify({
+        studentName: data.studentName,
+        email: data.email,
         age: data.age || null,
         subject: selectedSubject,
         topic: data.topic || null,
         date: selectedDate,
-        time_slot: selectedTime,
-        line_or_phone: data.lineOrPhone || null,
-        is_flexible: flexibleTime,
-        uploaded_files: fileResults.length > 0 ? fileResults : null,
+        timeSlot: selectedTime,
+        lineOrPhone: data.lineOrPhone || null,
+        flexibleTime: flexibleTime,
+        website: data.website || "",
+      }));
+      uploadedFiles.slice(0, 3).forEach(({ file }, i) => {
+        form.append(`file${i}`, file, file.name);
       });
 
-      if (dbError) {
-        console.error("DB insert error:", dbError);
-        toast.error(t("learnSubjects.dbError"));
-      }
+      const { data: resp, error: fnError } = await supabase.functions.invoke("submit-booking", {
+        body: form,
+      });
 
-      // Send email
-      try {
-        await emailjs.send("service_fu37bdk", "template_6uvrdtx", templateParams);
-      } catch (emailErr) {
-        console.error("EmailJS error:", emailErr);
-        toast.error(t("learnSubjects.emailError"));
+      if (fnError || (resp && (resp as any).error)) {
+        console.error("submit-booking failed:", fnError, resp);
+        toast.error(t("learnSubjects.toastError"));
+        return;
       }
 
       toast.success(t("learnSubjects.toastSuccess"));
